@@ -1,0 +1,23 @@
+{
+    "domain": "",
+    "scene_name": "auction_market_dynamics",
+    "odd_protocol": {
+        "overview": {},
+        "design_concepts": {},
+        "details": {}
+    },
+    "agent_types": {
+        "CommunicationAgent": "Facilitates information exchange between agents within the system, ensuring seamless interaction and data sharing.",
+        "CoordinationAgent": "Responsible for organizing the actions of multiple agents to achieve coherent system-level goals and objectives.",
+        "DecisionSupportAgent": "Provides insight and recommendations to guide decision-making processes based on collected data and pre-defined algorithms.",
+        "ResourceOptimizationAgent": "Monitors and optimizes the allocation of system resources to enhance efficiency and performance.",
+        "EnvironmentMonitoringAgent": "Observes and reports changes in the external environment, informing other agents of relevant updates."
+    },
+    "portrait": {
+        "CommunicationAgent": 2,
+        "CoordinationAgent": 1,
+        "DecisionSupportAgent": 3,
+        "ResourceOptimizationAgent": 4,
+        "EnvironmentMonitoringAgent": 5
+    }
+}

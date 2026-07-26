@@ -1,0 +1,131 @@
+{
+  "agents": {
+    "LeaderAgent": {
+      "imports": "from typing import Any, List, Optional\nimport json\nimport asyncio\nfrom loguru import logger\nfrom onesim.models import JsonBlockParser\nfrom onesim.agent import GeneralAgent\nfrom onesim.profile import AgentProfile\nfrom onesim.memory import MemoryStrategy\nfrom onesim.planning import PlanningBase\nfrom onesim.events import Event\nfrom onesim.relationship import RelationshipManager",
+      "handlers": {
+        "1": {
+          "code": "async def decide_contribution(self, event: Event) -> List[Event]:\n        instruction = \"\"\"Decide on the contribution level based on the current context of the followers.\n        Please return the decision in the following JSON format:\n        \n        {\n        \"contribution_level\": <float>,\n        \"selected_mechanism\": \"<'voluntary' or 'forced'>\",\n        \"target_ids\": [\"<The string ID(s) of the relevant agents>\"]\n        }\n        \"\"\"\n    \n        observation = \"Determine the contribution level based on the current scenario.\"\n        result = await self.generate_reaction(instruction, observation)\n    \n        contribution_level = result.get(\"contribution_level\", None)\n        selected_mechanism = result.get(\"selected_mechanism\", None)\n        target_ids = result.get(\"target_ids\", None)\n\n        if target_ids is None:\n            logger.warning(\"No target_ids returned. Aborting event creation.\")\n            return []\n\n        if not isinstance(target_ids, list):\n            target_ids = [target_ids]\n\n        self.profile.update_data(\"contribution_level\", contribution_level)\n        self.profile.update_data(\"selected_mechanism\", selected_mechanism)\n\n        events = []\n        for target_id in target_ids:\n            leader_contribution_event = LeaderContributionEvent(self.profile_id, target_id, contribution_level, selected_mechanism)\n            events.append(leader_contribution_event)\n            \n        return events",
+          "metadata": {
+            "id": 1,
+            "name": "decide_contribution",
+            "condition": "Mechanism selection: voluntary or forced",
+            "description": "The leader determines the level of contribution to the public goods pool, choosing either a voluntary or forced decision-making mechanism.",
+            "type": "OR",
+            "required_variables": [],
+            "output_updates": [
+              {
+                "name": "contribution_level",
+                "type": "float",
+                "context": "agent",
+                "description": "The level of contribution chosen by the leader."
+              },
+              {
+                "name": "selected_mechanism",
+                "type": "str",
+                "context": "agent",
+                "description": "The decision mechanism used by the leader, either 'voluntary' or 'forced'."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "FollowerAgent": {
+      "imports": "from typing import Any, List\nimport asyncio\nfrom loguru import logger\nfrom onesim.models import JsonBlockParser\nfrom onesim.agent import GeneralAgent\nfrom onesim.profile import AgentProfile\nfrom onesim.memory import MemoryStrategy\nfrom onesim.planning import PlanningBase\nfrom onesim.events import Event\nfrom onesim.relationship import RelationshipManager\nfrom .events import FollowerContributionResultEvent",
+      "handlers": {
+        "3": {
+          "code": "async def adjust_contribution(self, event: Event) -> List[Event]:\n        # Check condition first if the appropriate event is received\n        if not isinstance(event, LeaderContributionEvent):\n            return []  # Return empty list if condition not met\n\n        # Decision making using generate_reaction\n        response = await self.generate_reaction(\n            instruction=\"\"\"Use the leader's perceived sincerity and fairness to decide on the contribution level. \n            Return the decision as a dictionary with 'actual_contribution' as a float and 'completion_status' as a string.\"\"\",\n            observation=\"Leader's influence and current situation analysis.\"\n        )\n\n        actual_contribution = response.get('actual_contribution', 0.0)\n        completion_status = response.get('completion_status', \"pending\")\n        target_ids = response.get('target_ids', None)\n\n        if not isinstance(target_ids, list):\n            target_ids = [target_ids]\n\n        # Prepare and send the FollowerContributionResultEvent\n        events = []\n        for target_id in target_ids:\n            contribution_result_event = FollowerContributionResultEvent(\n                from_agent_id=self.profile.get_agent_id(),\n                to_agent_id=target_id,\n                actual_contribution=actual_contribution,\n                completion_status=completion_status\n            )\n            events.append(contribution_result_event)\n\n        return events",
+          "metadata": {
+            "id": 3,
+            "name": "adjust_contribution",
+            "condition": "Receipt of FollowerContributionDecisionEvent",
+            "description": "Based on the observation of the leader's action, the follower adjusts their own contribution to the public goods pool.",
+            "type": "OR",
+            "required_variables": [
+              {
+                "name": "analyzed_contribution_level",
+                "type": "float",
+                "context": "agent",
+                "description": "The analyzed contribution level perceived by the follower from the leader's actions."
+              },
+              {
+                "name": "perceived_fairness",
+                "type": "str",
+                "context": "agent",
+                "description": "The follower's perception of the fairness of the leader's contribution."
+              },
+              {
+                "name": "perceived_intent",
+                "type": "str",
+                "context": "agent",
+                "description": "The follower's perception of the sincerity of the leader's intent."
+              }
+            ],
+            "output_updates": [
+              {
+                "name": "actual_contribution",
+                "type": "float",
+                "context": "agent",
+                "description": "The actual contribution level decided by the follower."
+              },
+              {
+                "name": "completion_status",
+                "type": "str",
+                "context": "agent",
+                "description": "The status of the follower's decision-making process."
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "events": {
+    "imports": "from onesim.events import Event\nfrom typing import Any",
+    "definitions": {
+      "3": {
+        "code": "class FollowerContributionResultEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str,\n        actual_contribution: float = 0.0,\n        completion_status: str = \"pending\",\n        **kwargs: Any\n    ) -> None:\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id, **kwargs)\n        self.actual_contribution: float = actual_contribution\n        self.completion_status: str = completion_status",
+        "metadata": {
+          "id": 3,
+          "from_agent_type": "FollowerAgent",
+          "from_action_name": "adjust_contribution",
+          "to_agent_type": "EnvAgent",
+          "to_action_name": "terminate",
+          "from_action_id": 3,
+          "to_action_id": -1,
+          "event_name": "FollowerContributionResultEvent",
+          "event_info": "Follower decides on their contribution based on leader\u2019s perceived sincerity and fairness",
+          "fields": [
+            {
+              "name": "actual_contribution",
+              "type": "float",
+              "default_value": 0,
+              "description": "The actual contribution level decided by the follower"
+            },
+            {
+              "name": "completion_status",
+              "type": "str",
+              "default_value": "pending",
+              "description": "The status of the follower's decision-making process"
+            }
+          ]
+        }
+      },
+      "-1": {
+        "code": "class StartEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str,\n        **kwargs: Any\n    ) -> None:\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id, **kwargs)",
+        "metadata": {
+          "id": -1,
+          "from_agent_type": "EnvAgent",
+          "from_action_name": "start",
+          "to_agent_type": "LeaderAgent",
+          "to_action_name": "decide_contribution",
+          "from_action_id": 0,
+          "to_action_id": 1,
+          "event_name": "StartEvent",
+          "event_info": "Initial trigger for Leader agent to decide on contribution level",
+          "fields": []
+        }
+      }
+    }
+  }
+}

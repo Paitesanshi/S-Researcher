@@ -1,0 +1,23 @@
+{
+    "domain": "",
+    "scene_name": "unjust_enrichment",
+    "odd_protocol": {
+        "overview": {},
+        "design_concepts": {},
+        "details": {}
+    },
+    "agent_types": {
+        "DecisionMakerAgent": "Responsible for analyzing data from various sources and making strategic decisions to guide the system towards its goals.",
+        "CommunicationAgent": "Handles interactions between agents, ensuring proper data exchange and coordination within the system.",
+        "EnvironmentMonitorAgent": "Observes and reports on the external environment, providing relevant updates to other agents to adjust their strategies accordingly.",
+        "ResourceManagerAgent": "Optimizes resource allocation and usage across the system, ensuring efficient operation and minimizing waste.",
+        "LearningAgent": "Continually improves its performance by analyzing outcomes and adapting to new information or changes in the environment."
+    },
+    "portrait": {
+        "DecisionMakerAgent": 1,
+        "CommunicationAgent": 4,
+        "EnvironmentMonitorAgent": 5,
+        "ResourceManagerAgent": 3,
+        "LearningAgent": 2
+    }
+}

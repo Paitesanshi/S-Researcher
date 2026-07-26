@@ -1,0 +1,126 @@
+{
+  "domain": "Economics",
+  "scene_name": "public_goods_leadership_dynamics",
+  "odd_protocol": {
+    "overview": {
+      "system_goal": "The multi-agent system simulates a sequential public goods game to understand how different decision-making mechanisms (voluntary, default, forced) and contribution levels by leaders affect the cooperation levels of followers.",
+      "agent_types": "Two types of agents: Leaders who decide on their contribution level first, and Followers who observe the leader's actions and decision mechanism before making their own contribution decisions. Followers have traits (Prosocial or Proself) that may influence their cooperation.",
+      "environment_description": "Agents operate within a public goods game where each participant receives 10 tokens. Contributions to the group account are multiplied by 1.6 and divided equally among all 4 participants. The leader acts first, establishing a reference point for follower decisions.",
+      "key_parameters_description": "Key parameters include decision-making mechanisms (voluntary/default/forced), contribution levels (0-10 tokens), follower traits (Prosocial/Proself), perceived fairness, and intent attribution."
+    },
+    "design_concepts": {
+      "interaction_patterns": "Leaders decide their contribution first under one of three mechanisms. Followers observe both the contribution amount and the mechanism type, using this information to infer leader intent and fairness before making their own contributions.",
+      "communication_protocols": "Communication is implicit through observable actions. Followers receive LeaderContributionEvent containing contribution_level and decision_mechanism. No direct communication occurs, but followers infer leader intent from these signals.",
+      "decision_mechanisms": "Leaders contribute based on voluntary choice, default acceptance, or forced requirement. Followers use LLM-based reasoning to decide their contributions based on observed leader behavior, perceived fairness, and their own traits.",
+      "social_influence_dynamics": "Follower cooperation is influenced by perceived leader sincerity (voluntary > default > forced), contribution level, and alignment with follower traits. The mechanism type serves as a signal of leader intent."
+    },
+    "details": {
+      "agent_behaviors": "Leaders contribute 0-10 tokens under specified mechanisms. Followers observe leader actions and adjust contributions based on perceived sincerity, fairness, trait alignment, and strategic considerations. LLM-based reasoning captures complex decision-making processes.",
+      "decision_algorithms": "Leaders use profile-based contribution levels. Followers employ LLM reasoning that considers leader contribution, decision mechanism, personal traits, payoff calculations, and social norms (fairness, trust, reciprocity).",
+      "specific_constraints": "Contributions constrained to 0-10 tokens. Three mechanism types: voluntary (active choice), default (passive acceptance), forced (no choice). Group size fixed at 4 (1 leader + 3 followers). Multiplier fixed at 1.6.",
+      "behavioral_predictive_outcomes": "Hypothesis: Followers contribute more when leader contributions are voluntary vs forced (signaling effect). Prosocial followers expected to cooperate more than Proself followers. Higher leader contributions should elicit higher follower cooperation."
+    }
+  },
+  "metrics": [
+    {
+      "id": "Average_Follower_Contribution",
+      "name": "Average Follower Contribution",
+      "description": "Tracks the average contribution level of followers over time, indicating overall cooperation levels.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "variables": [
+        {
+          "name": "follower_contributions",
+          "source_type": "agent",
+          "agent_type": "FollowerAgent",
+          "path": "actual_contribution",
+          "required": true,
+          "is_list": true
+        }
+      ],
+      "calculation_logic": "Calculate the mean of all follower actual_contribution values. Shows follower cooperation trends over time.",
+      "function_name": "Average_Follower_Contribution"
+    },
+    {
+      "id": "Follower_Contribution_by_Trait",
+      "name": "Follower Contribution by Trait",
+      "description": "Compares contribution levels between Prosocial and Proself followers to test personality effects on cooperation.",
+      "visualization_type": "bar",
+      "update_interval": 10,
+      "variables": [
+        {
+          "name": "follower_contributions",
+          "source_type": "agent",
+          "agent_type": "FollowerAgent",
+          "path": "actual_contribution",
+          "required": true,
+          "is_list": true
+        },
+        {
+          "name": "follower_traits",
+          "source_type": "agent",
+          "agent_type": "FollowerAgent",
+          "path": "trait",
+          "required": true,
+          "is_list": true
+        }
+      ],
+      "calculation_logic": "Group follower contributions by trait (Prosocial/Proself) and calculate average for each group. Tests whether trait influences cooperation levels.",
+      "function_name": "Follower_Contribution_by_Trait"
+    },
+    {
+      "id": "Leader_Follower_Comparison",
+      "name": "Leader vs Follower Contribution Comparison",
+      "description": "Compares average leader and follower contributions to assess whether followers match, exceed, or fall below leader contribution levels.",
+      "visualization_type": "bar",
+      "update_interval": 10,
+      "variables": [
+        {
+          "name": "leader_contributions",
+          "source_type": "agent",
+          "agent_type": "LeaderAgent",
+          "path": "contribution_level",
+          "required": true,
+          "is_list": true
+        },
+        {
+          "name": "follower_contributions",
+          "source_type": "agent",
+          "agent_type": "FollowerAgent",
+          "path": "actual_contribution",
+          "required": true,
+          "is_list": true
+        }
+      ],
+      "calculation_logic": "Calculate separate averages for leader and followers. Returns bar chart with two bars for visual comparison.",
+      "function_name": "Leader_Follower_Comparison"
+    },
+    {
+      "id": "Follower_Contribution_Distribution",
+      "name": "Follower Contribution Distribution",
+      "description": "Shows the distribution of follower contributions across different cooperation levels: Free-riders (0), Low (1-3), Medium (4-7), and High (8-10). This reveals the spread and clustering of cooperation behaviors among followers.",
+      "visualization_type": "pie",
+      "update_interval": 10,
+      "variables": [
+        {
+          "name": "follower_contributions",
+          "source_type": "agent",
+          "agent_type": "FollowerAgent",
+          "path": "actual_contribution",
+          "required": true,
+          "is_list": true
+        }
+      ],
+      "calculation_logic": "Categorize each follower contribution into one of four groups: Free-riders (0 tokens), Low (1-3 tokens), Medium (4-7 tokens), or High (8-10 tokens). Count the number of followers in each category and display as a pie chart showing the proportion of each cooperation level.",
+      "function_name": "Follower_Contribution_Distribution"
+    }
+  ],
+  "agent_types": {
+    "LeaderAgent": "Makes the first contribution decision in the public goods game. Contribution level and decision mechanism (voluntary/default/forced) serve as signals that influence follower behavior. Acts as a reference point for group cooperation.",
+    "FollowerAgent": "Observes the leader's contribution and decision mechanism before making own contribution decision. Uses LLM-based reasoning to interpret leader intent, consider fairness, evaluate personal payoffs, and factor in personality traits (Prosocial/Proself) when deciding cooperation level."
+  },
+  "portrait": {
+    "LeaderAgent": 1,
+    "FollowerAgent": 3
+  }
+}

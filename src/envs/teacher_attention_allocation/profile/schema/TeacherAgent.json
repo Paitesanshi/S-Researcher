@@ -1,0 +1,65 @@
+{
+    "id": {
+        "type": "str",
+        "default": "",
+        "private": true,
+        "sampling": "default",
+        "description": "Unique teacher id (prefer CEPS `tchids` if available; otherwise synthetic `T_<clsids>`)"
+    },
+    "agent_type": {
+        "type": "str",
+        "default": "TeacherAgent",
+        "private": false,
+        "sampling": "default",
+        "description": "Agent class tag"
+    },
+    "name": {
+        "type": "str",
+        "default": "",
+        "private": false,
+        "sampling": "default",
+        "description": "Deterministic label (no LLM), e.g., Teacher_<id>"
+    },
+    "clsids": {
+        "type": "str",
+        "default": "",
+        "private": true,
+        "sampling": "default",
+        "description": "Class id this teacher is attached to (CEPS `clsids`, cast to string)"
+    },
+    "schids": {
+        "type": "str",
+        "default": "",
+        "private": true,
+        "sampling": "default",
+        "description": "School id (CEPS `schids`, cast to string)"
+    },
+    "class_id": {
+        "type": "str",
+        "default": "",
+        "private": true,
+        "sampling": "default",
+        "description": "Alias of clsids (preferred readable key)"
+    },
+    "school_id": {
+        "type": "str",
+        "default": "",
+        "private": true,
+        "sampling": "default",
+        "description": "Alias of schids (preferred readable key)"
+    },
+    "policy_mode": {
+        "type": "str",
+        "default": "merit",
+        "private": false,
+        "sampling": "default",
+        "description": "Simulation policy label: elite/merit/expression (set by experiment driver)"
+    },
+    "question_difficulty_default": {
+        "type": "float",
+        "default": 0.5,
+        "private": false,
+        "sampling": "default",
+        "description": "Default D_question used by simulation driver"
+    }
+}

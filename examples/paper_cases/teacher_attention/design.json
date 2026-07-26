@@ -1,0 +1,11 @@
+{
+  "paradigm": "deductive",
+  "environment": "teacher_attention_allocation",
+  "conditions": ["expression", "merit", "socioeconomic"],
+  "teachers": 221,
+  "students": 5525,
+  "rounds": 30,
+  "replicates_per_condition": 3,
+  "replicate_seeds": [56789, 56790, 56791],
+  "restricted_input": "CEPS-derived profiles are not included."
+}

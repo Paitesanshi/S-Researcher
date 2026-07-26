@@ -1,0 +1,90 @@
+[
+    {
+        "source_agent": "OrdinaryUser",
+        "target_agent": "OrdinaryUser",
+        "relationship_type": "workflow_interaction",
+        "direction": "unidirectional",
+        "required": true,
+        "constraints": {
+            "min_connections": 1,
+            "max_connections": null
+        }
+    },
+    {
+        "source_agent": "OrdinaryUser",
+        "target_agent": "OpinionLeader",
+        "relationship_type": "workflow_interaction",
+        "direction": "unidirectional",
+        "required": true,
+        "constraints": {
+            "min_connections": 1,
+            "max_connections": null
+        }
+    },
+    {
+        "source_agent": "OpinionLeader",
+        "target_agent": "MediaOrganization",
+        "relationship_type": "workflow_interaction",
+        "direction": "unidirectional",
+        "required": true,
+        "constraints": {
+            "min_connections": 1,
+            "max_connections": null
+        }
+    },
+    {
+        "source_agent": "MediaOrganization",
+        "target_agent": "MediaOrganization",
+        "relationship_type": "workflow_interaction",
+        "direction": "unidirectional",
+        "required": true,
+        "constraints": {
+            "min_connections": 1,
+            "max_connections": null
+        }
+    },
+    {
+        "source_agent": "MediaOrganization",
+        "target_agent": "FactCheckOrganization",
+        "relationship_type": "workflow_interaction",
+        "direction": "unidirectional",
+        "required": true,
+        "constraints": {
+            "min_connections": 1,
+            "max_connections": null
+        }
+    },
+    {
+        "source_agent": "FactCheckOrganization",
+        "target_agent": "FactCheckOrganization",
+        "relationship_type": "workflow_interaction",
+        "direction": "unidirectional",
+        "required": true,
+        "constraints": {
+            "min_connections": 1,
+            "max_connections": null
+        }
+    },
+    {
+        "source_agent": "FactCheckOrganization",
+        "target_agent": "PlatformRegulator",
+        "relationship_type": "workflow_interaction",
+        "direction": "unidirectional",
+        "required": true,
+        "constraints": {
+            "min_connections": 1,
+            "max_connections": null
+        }
+    },
+    {
+        "source_agent": "PlatformRegulator",
+        "target_agent": "PlatformRegulator",
+        "relationship_type": "workflow_interaction",
+        "direction": "unidirectional",
+        "required": true,
+        "constraints": {
+            "min_connections": 1,
+            "max_connections": null
+        }
+    }
+]

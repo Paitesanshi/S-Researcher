@@ -1,0 +1,27 @@
+{
+    "domain": "",
+    "scene_name": "case_law_model",
+    "odd_protocol": {
+        "overview": {},
+        "design_concepts": {},
+        "details": {}
+    },
+    "agent_types": {
+        "CoordinatorAgent": "Manages overall system activities and communication between agents.",
+        "CommunicationAgent": "Facilitates information exchange and protocol adherence between different agents.",
+        "DataAgent": "Gathers and processes data required for system operations.",
+        "DecisionAgent": "Analyzes data and determines actions or strategies for system goals.",
+        "MonitoringAgent": "Observes and evaluates system performance and agent activities.",
+        "ResourceAgent": "Allocates necessary resources and coordinates shared utilities within the system.",
+        "SecurityAgent": "Ensures system integrity and protects against unauthorized access or threats."
+    },
+    "portrait": {
+        "CoordinatorAgent": 1,
+        "CommunicationAgent": 2,
+        "DataAgent": 3,
+        "DecisionAgent": 4,
+        "MonitoringAgent": 5,
+        "ResourceAgent": 3,
+        "SecurityAgent": 1
+    }
+}

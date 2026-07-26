@@ -1,0 +1,399 @@
+{
+  "agents": {
+    "WorkerAgent": {
+      "imports": "from typing import Any, List, Optional\nimport json\nimport asyncio\nfrom loguru import logger\nfrom onesim.models import JsonBlockParser\nfrom onesim.agent import GeneralAgent\nfrom onesim.profile import AgentProfile\nfrom onesim.memory import MemoryStrategy\nfrom onesim.planning import PlanningBase\nfrom onesim.events import *\nfrom onesim.relationship import RelationshipManager\nfrom .events import *",
+      "handlers": {
+        "1": {
+          "code": "async def receive_leadership_attention(self, event: Event) -> List[Event]:\n        # Safely retrieve event-specific data\n        leadership_attention_level = getattr(event, 'leadership_attention_level', 0)\n        feedback_content = getattr(event, 'feedback_content', \"No feedback provided\")\n\n        # Instruction for LLM to generate emotional response\n        instruction = \"\"\"\n        Based on the received leadership attention level and feedback content, update the emotional state of the WorkerAgent.\n        Please return the information in the following JSON format:\n        {\n            \"emotional_state\": \"<Updated emotional state based on leadership attention>\",\n            \"target_ids\": [\"<The string ID of the LeaderAgent to acknowledge>\"]\n        }\n        \"\"\"\n\n        # Observation context for LLM\n        observation = f\"Leadership attention level: {leadership_attention_level}, Feedback content: {feedback_content}\"\n\n        # Generate reaction using LLM\n        result = await self.generate_reaction(instruction, observation)\n\n        # Parse the LLM's JSON response\n        emotional_state = result.get('emotional_state', None)\n        target_ids = result.get('target_ids', None)\n        if not isinstance(target_ids, list):\n            target_ids = [target_ids]\n\n        # Update the WorkerAgent's emotional state\n        self.profile.update_data(\"emotional_state\", emotional_state)\n        self.profile.update_data(\"leadership_attention_level\", leadership_attention_level)\n\n        # Register that attention has been received\n        self.attention_received = True\n\n        # Create and send AttentionReceivedEvent to each target LeaderAgent\n        events = []\n        for target_id in target_ids:\n            attention_received_event = AttentionReceivedEvent(\n                from_agent_id=self.profile_id,\n                to_agent_id=target_id,\n                worker_id=self.profile_id,\n                leadership_attention_level=leadership_attention_level,\n                response_message=\"Acknowledged\"\n            )\n            events.append(attention_received_event)\n\n        return events",
+          "metadata": {
+            "id": 1,
+            "name": "receive_leadership_attention",
+            "condition": "null",
+            "description": "WorkerAgent receives attention from LeaderAgent, which influences their emotional state and productivity.",
+            "type": "OR",
+            "required_variables": [
+              {
+                "name": "leadership_attention_level",
+                "type": "integer",
+                "context": "event",
+                "description": "Level of leadership attention received by WorkerAgent."
+              },
+              {
+                "name": "feedback_content",
+                "type": "string",
+                "context": "event",
+                "description": "Content of the feedback provided by LeaderAgent."
+              }
+            ],
+            "output_updates": [
+              {
+                "name": "emotional_state",
+                "type": "string",
+                "context": "agent",
+                "description": "Updated emotional state of WorkerAgent after receiving leadership attention."
+              }
+            ]
+          }
+        },
+        "2": {
+          "code": "async def adjust_productivity(self, event: Event) -> List[Event]:\n        # Update profile based on the incoming event type\n        if isinstance(event, AttentionReceivedEvent):\n            self.attention_received = True\n        elif isinstance(event, TeamSupportEvent):\n            self.team_support_received = True\n\n        # Proceed only if both events have been received\n        if not (self.attention_received and self.team_support_received):\n            return []\n\n        # Retrieve required variables\n        leadership_attention_level = self.profile.get_data(\"leadership_attention_level\", 0)\n        support_type = getattr(event, 'support_type', \"Unknown\")\n\n        # Generate decision using LLM\n        observation = f\"Leadership attention level: {leadership_attention_level}, Support type: {support_type}\"\n        instruction = \"\"\"\n        Based on the received leadership attention and team support, determine the new productivity level for the WorkerAgent. \n        Please return the information in the following JSON format:\n\n        {\n        \"new_productivity_level\": <The adjusted level of productivity as an integer>,\n        \"adjustment_reason\": \"<Reason for productivity adjustment>\",\n        \"target_ids\": [\"<The string ID of the EnvAgent>\"]\n        }\n        \"\"\"\n    \n        result = await self.generate_reaction(instruction, observation)\n    \n        new_productivity_level = result.get('new_productivity_level', 0)\n        adjustment_reason = result.get('adjustment_reason', \"Leadership Attention\")\n        target_ids = result.get('target_ids', None)\n        if not isinstance(target_ids, list):\n            target_ids = [target_ids]\n\n        # Update the agent's productivity level\n        self.profile.update_data(\"productivity_level\", new_productivity_level)\n\n        # Reset flags after processing\n        self.attention_received = False\n        self.team_support_received = False\n\n        # Prepare and send the ProductivityAdjustedEvent\n        events = []\n        for target_id in target_ids:\n            productivity_event = ProductivityAdjustedEvent(\n                from_agent_id=self.profile_id,\n                to_agent_id=target_id,\n                worker_id=self.profile_id,\n                new_productivity_level=new_productivity_level,\n                adjustment_reason=adjustment_reason\n            )\n            events.append(productivity_event)\n    \n        return events",
+          "metadata": {
+            "id": 2,
+            "name": "adjust_productivity",
+            "condition": "AttentionReceivedEvent and TeamSupportEvent",
+            "description": "WorkerAgent adjusts their productivity based on received leadership attention and team support.",
+            "type": "AND",
+            "required_variables": [
+              {
+                "name": "leadership_attention_level",
+                "type": "integer",
+                "context": "agent",
+                "description": "Current level of leadership attention influencing WorkerAgent."
+              },
+              {
+                "name": "support_type",
+                "type": "string",
+                "context": "event",
+                "description": "Type of support provided by TeamAgent."
+              }
+            ],
+            "output_updates": [
+              {
+                "name": "productivity_level",
+                "type": "integer",
+                "context": "agent",
+                "description": "Adjusted productivity level of WorkerAgent."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "LeaderAgent": {
+      "imports": "from typing import Any, List, Optional\nimport json\nimport asyncio\nfrom loguru import logger\nfrom onesim.models import JsonBlockParser\nfrom onesim.agent import GeneralAgent\nfrom onesim.profile import AgentProfile\nfrom onesim.memory import MemoryStrategy\nfrom onesim.planning import PlanningBase\nfrom onesim.events import *\nfrom onesim.relationship import RelationshipManager\nfrom .events import *",
+      "handlers": {
+        "3": {
+          "code": "async def provide_feedback_and_tasks(self, event: Event) -> List[Event]:\n        # Since the action condition is null, proceed directly with the handler logic\n\n        # Retrieve required variables from the event, handle cases where they might be absent\n        worker_id = getattr(event, 'worker_id', '')\n        task_assigned = getattr(event, 'task_assigned', 'None')\n\n        # Prepare instruction for LLM to generate feedback content and target_ids\n        instruction = \"\"\"\n        Please generate feedback content and determine target_ids for providing feedback and tasks.\n        The feedback should be motivating and relevant to the task assigned.\n        Return the information in the following JSON format:\n\n        {\n        \"feedback_content\": \"<Motivational feedback>\",\n        \"task_assigned\": \"<Task assigned to the worker>\",\n        \"target_ids\": [\"<WorkerAgent ID or list of WorkerAgent IDs>\"]\n        }\n        \"\"\"\n\n        observation = f\"Worker ID: {worker_id}, Task Assigned: {task_assigned}\"\n\n        # Generate reaction using LLM\n        result = await self.generate_reaction(instruction, observation)\n\n        feedback_content = result.get('feedback_content', \"Keep up the good work!\")\n        task_assigned = result.get('task_assigned', \"None\")\n        target_ids = result.get('target_ids', None)\n\n        if not isinstance(target_ids, list):\n            target_ids = [target_ids]\n\n        # Update agent's feedback log\n        feedback_log = f\"Feedback provided to {worker_id}: {feedback_content} with task {task_assigned}\"\n        self.profile.update_data(\"feedback_log\", feedback_log)\n\n        # Prepare and send FeedbackProvidedEvent to each target_id\n        events = []\n        for target_id in target_ids:\n            feedback_event = FeedbackProvidedEvent(\n                from_agent_id=self.profile_id,\n                to_agent_id=target_id,\n                leader_id=self.profile_id,\n                worker_id=target_id,\n                feedback_content=feedback_content,\n                task_assigned=task_assigned\n            )\n            events.append(feedback_event)\n\n        return events",
+          "metadata": {
+            "id": 3,
+            "name": "provide_feedback_and_tasks",
+            "condition": "null",
+            "description": "LeaderAgent provides feedback and assigns tasks to WorkerAgent to enhance their productivity.",
+            "type": "OR",
+            "required_variables": [
+              {
+                "name": "worker_id",
+                "type": "string",
+                "context": "event",
+                "description": "Identifier for the WorkerAgent receiving feedback."
+              },
+              {
+                "name": "task_assigned",
+                "type": "string",
+                "context": "event",
+                "description": "Task assigned to WorkerAgent along with feedback."
+              }
+            ],
+            "output_updates": [
+              {
+                "name": "feedback_log",
+                "type": "string",
+                "context": "agent",
+                "description": "Log of feedback provided to WorkerAgent."
+              }
+            ]
+          }
+        },
+        "4": {
+          "code": "async def evaluate_employee_response(self, event: Event) -> List[Event]:\n        # Condition Check: No condition specified, proceed with the handler logic\n\n        # Retrieve required variables from event, handle cases where they might be absent\n        response_message = getattr(event, 'response_message', 'Acknowledged')\n\n        # Generate reaction using LLM\n        observation = f\"Received response message: {response_message}\"\n        instruction = \"\"\"Evaluate the response message from WorkerAgent based on leadership attention.\n        Determine if the response is 'Satisfactory' or requires further attention.\n        Provide the evaluation outcome and decide on the target_ids for sending the event.\n        Please return the information in the following JSON format:\n\n        {\n        \"evaluation_outcome\": \"<Outcome of the evaluation>\",\n        \"target_ids\": [\"<The string ID of the EnvAgent>\"]\n        }\n        \"\"\"\n\n        result = await self.generate_reaction(instruction, observation)\n\n        # Extract evaluation outcome and target_ids\n        evaluation_outcome = result.get('evaluation_outcome', \"Satisfactory\")\n        target_ids = result.get('target_ids', \"ENV\")\n        if not isinstance(target_ids, list):\n            target_ids = [target_ids]\n\n        # Update agent data with evaluation outcome\n        self.profile.update_data(\"evaluation_outcome\", evaluation_outcome)\n\n        # Prepare and send ResponseEvaluatedEvent to EnvAgent\n        events = []\n        for target_id in target_ids:\n            response_evaluated_event = ResponseEvaluatedEvent(\n                from_agent_id=self.profile_id,\n                to_agent_id=target_id,\n                leader_id=self.profile_id,\n                worker_id=getattr(event, 'worker_id', ''),\n                evaluation_outcome=evaluation_outcome\n            )\n            events.append(response_evaluated_event)\n\n        return events",
+          "metadata": {
+            "id": 4,
+            "name": "evaluate_employee_response",
+            "condition": "null",
+            "description": "LeaderAgent evaluates the response of WorkerAgent to the feedback and tasks provided.",
+            "type": "OR",
+            "required_variables": [
+              {
+                "name": "response_message",
+                "type": "string",
+                "context": "event",
+                "description": "Message sent by WorkerAgent in response to leadership attention."
+              }
+            ],
+            "output_updates": [
+              {
+                "name": "evaluation_outcome",
+                "type": "string",
+                "context": "agent",
+                "description": "Outcome of the evaluation performed by LeaderAgent."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "TeamAgent": {
+      "imports": "from typing import Any, List, Optional\nimport json\nimport asyncio\nfrom loguru import logger\nfrom onesim.models import JsonBlockParser\nfrom onesim.agent import GeneralAgent\nfrom onesim.profile import AgentProfile\nfrom onesim.memory import MemoryStrategy\nfrom onesim.planning import PlanningBase\nfrom onesim.events import *\nfrom onesim.relationship import RelationshipManager\nfrom .events import *",
+      "handlers": {
+        "5": {
+          "code": "async def initiate_team_interaction(self, event: Event) -> List[Event]:\n        # No condition to check, proceed directly with the handler logic\n\n        # Safely access interaction details from the event\n        interaction_details = getattr(event, 'interaction_details', 'Group discussion')\n\n        # Generate reaction with LLM for decision making\n        instruction = \"\"\"Please determine the target WorkerAgent(s) for team interaction initiation. \n        The context involves enhancing team atmosphere through emotional support and cooperation. \n        Ensure to include the interaction_details in the response. \n        Return the information in the following JSON format:\n\n        {\n            \"interaction_details\": \"<Details of interaction initiated by TeamAgent>\",\n            \"target_ids\": [\"<The string ID(s) of the WorkerAgent(s)>\"]\n        }\n        \"\"\"\n\n        observation = f\"Interaction Details: {interaction_details}\"\n        result = await self.generate_reaction(instruction, observation)\n\n        interaction_details = result.get('interaction_details', interaction_details)\n        target_ids = result.get('target_ids', None)\n        if not isinstance(target_ids, list):\n            target_ids = [target_ids]\n\n        # Prepare and send TeamSupportEvent to each WorkerAgent\n        events = []\n        for target_id in target_ids:\n            team_support_event = TeamSupportEvent(\n                from_agent_id=self.profile_id,\n                to_agent_id=target_id,\n                team_id=self.profile_id,  # Assuming TeamAgent's ID is used as team_id\n                worker_id=target_id,\n                support_type=\"Emotional\",\n                interaction_details=interaction_details\n            )\n            events.append(team_support_event)\n\n        # Update the team atmosphere in the environment\n        new_team_atmosphere = \"Improved through interaction\"\n        self.env.update_data(\"team_atmosphere\", new_team_atmosphere)\n\n        return events",
+          "metadata": {
+            "id": 5,
+            "name": "initiate_team_interaction",
+            "condition": "null",
+            "description": "TeamAgent initiates interaction among team members to provide emotional support and enhance productivity.",
+            "type": "OR",
+            "required_variables": [
+              {
+                "name": "interaction_details",
+                "type": "string",
+                "context": "event",
+                "description": "Details of interaction initiated by TeamAgent."
+              }
+            ],
+            "output_updates": [
+              {
+                "name": "team_atmosphere",
+                "type": "string",
+                "context": "env",
+                "description": "Updated atmosphere within the team after interaction."
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "events": {
+    "imports": "from onesim.events import Event\nfrom typing import Any",
+    "definitions": {
+      "-1": {
+        "code": "class StartEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str,\n        **kwargs: Any\n    ) -> None:\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id, **kwargs)",
+        "metadata": {
+          "id": -1,
+          "from_agent_type": "EnvAgent",
+          "from_action_name": "start",
+          "to_agent_type": "WorkerAgent",
+          "to_action_name": "receive_leadership_attention",
+          "from_action_id": 0,
+          "to_action_id": 1,
+          "event_name": "StartEvent",
+          "event_info": "Initial trigger for WorkerAgent to start receiving leadership attention",
+          "fields": []
+        }
+      },
+      "-2": {
+        "code": "class StartEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str,\n        **kwargs: Any\n    ) -> None:\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id, **kwargs)",
+        "metadata": {
+          "id": -2,
+          "from_agent_type": "EnvAgent",
+          "from_action_name": "start",
+          "to_agent_type": "LeaderAgent",
+          "to_action_name": "provide_feedback_and_tasks",
+          "from_action_id": 0,
+          "to_action_id": 3,
+          "event_name": "StartEvent",
+          "event_info": "Initial trigger for LeaderAgent to start providing feedback and tasks",
+          "fields": []
+        }
+      },
+      "-3": {
+        "code": "class StartEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str,\n        **kwargs: Any\n    ) -> None:\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id, **kwargs)",
+        "metadata": {
+          "id": -3,
+          "from_agent_type": "EnvAgent",
+          "from_action_name": "start",
+          "to_agent_type": "TeamAgent",
+          "to_action_name": "initiate_team_interaction",
+          "from_action_id": 0,
+          "to_action_id": 5,
+          "event_name": "StartEvent",
+          "event_info": "Initial trigger for TeamAgent to start team interactions",
+          "fields": []
+        }
+      },
+      "1": {
+        "code": "class AttentionReceivedEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str,\n        worker_id: str = \"\",\n        leadership_attention_level: int = 0,\n        response_message: str = 'Acknowledged',\n        **kwargs: Any\n    ) -> None:\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id, **kwargs)\n        self.worker_id = worker_id\n        self.leadership_attention_level = leadership_attention_level\n        self.response_message = response_message",
+        "metadata": {
+          "id": 1,
+          "from_agent_type": "WorkerAgent",
+          "from_action_name": "receive_leadership_attention",
+          "to_agent_type": "LeaderAgent",
+          "to_action_name": "evaluate_employee_response",
+          "from_action_id": 1,
+          "to_action_id": 4,
+          "event_name": "AttentionReceivedEvent",
+          "event_info": "WorkerAgent acknowledges leadership attention and sends response",
+          "fields": [
+            {
+              "name": "worker_id",
+              "type": "string",
+              "default_value": "",
+              "description": "Unique identifier for the WorkerAgent acknowledging leadership attention."
+            },
+            {
+              "name": "leadership_attention_level",
+              "type": "integer",
+              "default_value": 0,
+              "description": "Level of leadership attention received by WorkerAgent."
+            },
+            {
+              "name": "response_message",
+              "type": "string",
+              "default_value": "Acknowledged",
+              "description": "Message sent by WorkerAgent in response to leadership attention."
+            }
+          ]
+        }
+      },
+      "2": {
+        "code": "class ProductivityAdjustedEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str,\n        worker_id: str = \"\",\n        new_productivity_level: int = 0,\n        adjustment_reason: str = 'Leadership Attention',\n        **kwargs: Any\n    ) -> None:\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id, **kwargs)\n        self.worker_id = worker_id\n        self.new_productivity_level = new_productivity_level\n        self.adjustment_reason = adjustment_reason",
+        "metadata": {
+          "id": 2,
+          "from_agent_type": "WorkerAgent",
+          "from_action_name": "adjust_productivity",
+          "to_agent_type": "EnvAgent",
+          "to_action_name": "terminate",
+          "from_action_id": 2,
+          "to_action_id": -1,
+          "event_name": "ProductivityAdjustedEvent",
+          "event_info": "WorkerAgent adjusts productivity based on leadership attention and team support",
+          "fields": [
+            {
+              "name": "worker_id",
+              "type": "string",
+              "default_value": "",
+              "description": "Unique identifier for the WorkerAgent adjusting productivity."
+            },
+            {
+              "name": "new_productivity_level",
+              "type": "integer",
+              "default_value": 0,
+              "description": "The adjusted level of productivity of the WorkerAgent."
+            },
+            {
+              "name": "adjustment_reason",
+              "type": "string",
+              "default_value": "Leadership Attention",
+              "description": "Reason for productivity adjustment, influenced by leadership attention or team support."
+            }
+          ]
+        }
+      },
+      "3": {
+        "code": "class FeedbackProvidedEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str,\n        leader_id: str = \"\",\n        worker_id: str = \"\",\n        feedback_content: str = 'Keep up the good work!',\n        task_assigned: str = 'None',\n        **kwargs: Any\n    ) -> None:\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id, **kwargs)\n        self.leader_id = leader_id\n        self.worker_id = worker_id\n        self.feedback_content = feedback_content\n        self.task_assigned = task_assigned",
+        "metadata": {
+          "id": 3,
+          "from_agent_type": "LeaderAgent",
+          "from_action_name": "provide_feedback_and_tasks",
+          "to_agent_type": "WorkerAgent",
+          "to_action_name": "receive_leadership_attention",
+          "from_action_id": 3,
+          "to_action_id": 1,
+          "event_name": "FeedbackProvidedEvent",
+          "event_info": "LeaderAgent provides feedback and tasks to WorkerAgent",
+          "fields": [
+            {
+              "name": "leader_id",
+              "type": "string",
+              "default_value": "",
+              "description": "Unique identifier for the LeaderAgent providing feedback."
+            },
+            {
+              "name": "worker_id",
+              "type": "string",
+              "default_value": "",
+              "description": "Unique identifier for the WorkerAgent receiving feedback."
+            },
+            {
+              "name": "feedback_content",
+              "type": "string",
+              "default_value": "Keep up the good work!",
+              "description": "Content of the feedback provided by LeaderAgent."
+            },
+            {
+              "name": "task_assigned",
+              "type": "string",
+              "default_value": "None",
+              "description": "Task assigned to WorkerAgent along with feedback."
+            }
+          ]
+        }
+      },
+      "4": {
+        "code": "class ResponseEvaluatedEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str,\n        leader_id: str = \"\",\n        worker_id: str = \"\",\n        evaluation_outcome: str = 'Satisfactory',\n        **kwargs: Any\n    ) -> None:\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id, **kwargs)\n        self.leader_id = leader_id\n        self.worker_id = worker_id\n        self.evaluation_outcome = evaluation_outcome",
+        "metadata": {
+          "id": 4,
+          "from_agent_type": "LeaderAgent",
+          "from_action_name": "evaluate_employee_response",
+          "to_agent_type": "EnvAgent",
+          "to_action_name": "terminate",
+          "from_action_id": 4,
+          "to_action_id": -1,
+          "event_name": "ResponseEvaluatedEvent",
+          "event_info": "LeaderAgent evaluates the response of WorkerAgent to provided feedback",
+          "fields": [
+            {
+              "name": "leader_id",
+              "type": "string",
+              "default_value": "",
+              "description": "Unique identifier for the LeaderAgent evaluating the response."
+            },
+            {
+              "name": "worker_id",
+              "type": "string",
+              "default_value": "",
+              "description": "Unique identifier for the WorkerAgent whose response is being evaluated."
+            },
+            {
+              "name": "evaluation_outcome",
+              "type": "string",
+              "default_value": "Satisfactory",
+              "description": "Outcome of the evaluation performed by LeaderAgent."
+            }
+          ]
+        }
+      },
+      "5": {
+        "code": "class TeamSupportEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str,\n        team_id: str = \"\",\n        worker_id: str = \"\",\n        support_type: str = 'Emotional',\n        interaction_details: str = 'Group discussion',\n        **kwargs: Any\n    ) -> None:\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id, **kwargs)\n        self.team_id = team_id\n        self.worker_id = worker_id\n        self.support_type = support_type\n        self.interaction_details = interaction_details",
+        "metadata": {
+          "id": 5,
+          "from_agent_type": "TeamAgent",
+          "from_action_name": "initiate_team_interaction",
+          "to_agent_type": "WorkerAgent",
+          "to_action_name": "adjust_productivity",
+          "from_action_id": 5,
+          "to_action_id": 2,
+          "event_name": "TeamSupportEvent",
+          "event_info": "TeamAgent initiates interaction and provides support to WorkerAgent",
+          "fields": [
+            {
+              "name": "team_id",
+              "type": "string",
+              "default_value": "",
+              "description": "Unique identifier for the TeamAgent providing support."
+            },
+            {
+              "name": "worker_id",
+              "type": "string",
+              "default_value": "",
+              "description": "Unique identifier for the WorkerAgent receiving team support."
+            },
+            {
+              "name": "support_type",
+              "type": "string",
+              "default_value": "Emotional",
+              "description": "Type of support provided by TeamAgent to WorkerAgent."
+            },
+            {
+              "name": "interaction_details",
+              "type": "string",
+              "default_value": "Group discussion",
+              "description": "Details of interaction initiated by TeamAgent."
+            }
+          ]
+        }
+      }
+    }
+  }
+}

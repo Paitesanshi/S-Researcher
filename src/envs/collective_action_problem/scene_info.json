@@ -1,0 +1,23 @@
+{
+    "domain": "",
+    "scene_name": "collective_action_problem",
+    "odd_protocol": {
+        "overview": {},
+        "design_concepts": {},
+        "details": {}
+    },
+    "agent_types": {
+        "EnvironmentAgent": "Monitors and updates the state of the environment, providing essential data to other agents for decision-making.",
+        "DecisionAgent": "Processes information from the EnvironmentAgent and other agents to make high-level decisions that guide system actions.",
+        "CommunicationAgent": "Facilitates information exchange between agents, ensuring seamless interaction and effective coordination.",
+        "ExecutionAgent": "Carries out tasks and actions determined by the DecisionAgent, interacting directly with the environment as needed.",
+        "LearningAgent": "Adaptively improves system performance by analyzing past actions and outcomes, evolving strategies over time."
+    },
+    "portrait": {
+        "EnvironmentAgent": 3,
+        "DecisionAgent": 1,
+        "CommunicationAgent": 5,
+        "ExecutionAgent": 3,
+        "LearningAgent": 4
+    }
+}

@@ -1,0 +1,49 @@
+{
+    "environment": {
+        "variables": [
+            {
+                "name": "team_atmosphere",
+                "type": "string",
+                "default_value": null
+            }
+        ]
+    },
+    "agents": {
+        "WorkerAgent": {
+            "variables": [
+                {
+                    "name": "emotional_state",
+                    "type": "string",
+                    "default_value": null
+                },
+                {
+                    "name": "leadership_attention_level",
+                    "type": "integer",
+                    "default_value": null
+                },
+                {
+                    "name": "productivity_level",
+                    "type": "integer",
+                    "default_value": null
+                }
+            ]
+        },
+        "LeaderAgent": {
+            "variables": [
+                {
+                    "name": "feedback_log",
+                    "type": "string",
+                    "default_value": null
+                },
+                {
+                    "name": "evaluation_outcome",
+                    "type": "string",
+                    "default_value": null
+                }
+            ]
+        },
+        "TeamAgent": {
+            "variables": []
+        }
+    }
+}

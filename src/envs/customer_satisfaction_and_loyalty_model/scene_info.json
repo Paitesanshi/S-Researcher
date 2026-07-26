@@ -1,0 +1,23 @@
+{
+    "domain": "",
+    "scene_name": "customer_satisfaction_and_loyalty_model",
+    "odd_protocol": {
+        "overview": {},
+        "design_concepts": {},
+        "details": {}
+    },
+    "agent_types": {
+        "CoordinatorAgent": "Responsible for managing and coordinating the actions of other agents to achieve system-wide goals.",
+        "SensorAgent": "Collects data from the environment and provides it to other agents for processing and decision-making.",
+        "DecisionAgent": "Analyzes data and makes decisions to guide the actions of the system towards its objectives.",
+        "ActuatorAgent": "Executes actions in the environment based on decisions made by the DecisionAgent.",
+        "CommunicationAgent": "Facilitates communication and information exchange between agents to ensure effective collaboration."
+    },
+    "portrait": {
+        "CoordinatorAgent": 1,
+        "SensorAgent": 3,
+        "DecisionAgent": 2,
+        "ActuatorAgent": 3,
+        "CommunicationAgent": 5
+    }
+}

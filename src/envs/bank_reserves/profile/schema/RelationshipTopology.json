@@ -1,0 +1,7 @@
+{
+    "topology": "hierarchical",
+    "params": {
+        "branching_factor": 3,
+        "central_agent": "BankAgent"
+    }
+}

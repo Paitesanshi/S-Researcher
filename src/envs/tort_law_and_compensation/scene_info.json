@@ -1,0 +1,21 @@
+{
+    "domain": "",
+    "scene_name": "tort_law_and_compensation",
+    "odd_protocol": {
+        "overview": {},
+        "design_concepts": {},
+        "details": {}
+    },
+    "agent_types": {
+        "DecisionMaker": "Agent responsible for processing information and making decisions based on defined criteria and objectives.",
+        "EnvironmentMonitor": "Agent tasked with observing and gathering data from the environment, providing real-time updates on system status.",
+        "Communicator": "Agent designed to facilitate interactions and information exchange between different agents within the system.",
+        "TaskExecutor": "Agent focused on carrying out specific tasks as assigned, ensuring objectives are met efficiently within set parameters."
+    },
+    "portrait": {
+        "DecisionMaker": 1,
+        "EnvironmentMonitor": 2,
+        "Communicator": 3,
+        "TaskExecutor": 5
+    }
+}

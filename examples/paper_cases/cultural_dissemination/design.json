@@ -1,0 +1,9 @@
+{
+  "paradigm": "inductive",
+  "environment": "dynamic_culture_dissemination",
+  "agents": 100,
+  "grid": [10, 10],
+  "rounds": 100,
+  "replicates": 3,
+  "replicate_seeds": [10001, 10002, 10003]
+}

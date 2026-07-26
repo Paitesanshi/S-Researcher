@@ -1,0 +1,23 @@
+{
+    "domain": "",
+    "scene_name": "cash_flow",
+    "odd_protocol": {
+        "overview": {},
+        "design_concepts": {},
+        "details": {}
+    },
+    "agent_types": {
+        "CoordinatorAgent": "Responsible for overseeing the interactions between agents and ensuring the system's objectives are met.",
+        "CommunicationAgent": "Facilitates information exchange between agents, ensuring messages are delivered accurately and efficiently.",
+        "DecisionAgent": "Analyzes data and makes decisions to guide the system towards its goals, often using algorithms or heuristics.",
+        "EnvironmentAgent": "Simulates the external environment, providing data and feedback to other agents to inform their actions.",
+        "MonitoringAgent": "Tracks the performance and status of the system, alerting other agents to any issues or anomalies."
+    },
+    "portrait": {
+        "CoordinatorAgent": 1,
+        "CommunicationAgent": 3,
+        "DecisionAgent": 2,
+        "EnvironmentAgent": 5,
+        "MonitoringAgent": 4
+    }
+}

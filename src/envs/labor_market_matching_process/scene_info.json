@@ -1,0 +1,21 @@
+{
+    "domain": "",
+    "scene_name": "labor_market_matching_process",
+    "odd_protocol": {
+        "overview": {},
+        "design_concepts": {},
+        "details": {}
+    },
+    "agent_types": {
+        "SensorAgent": "Collects environmental data and reports it to relevant agents, serving as the eyes and ears of the system to inform decision-making.",
+        "DecisionMakerAgent": "Analyzes information from various sources to make informed decisions and direct the actions of other agents based on predefined goals.",
+        "ExecutorAgent": "Carries out the specific tasks or actions as instructed by the DecisionMakerAgent, implementing the strategies determined by the system.",
+        "CoordinatorAgent": "Responsible for orchestrating interactions between various agents in the system, ensuring that tasks are completed efficiently and in a timely manner."
+    },
+    "portrait": {
+        "SensorAgent": 5,
+        "DecisionMakerAgent": 1,
+        "ExecutorAgent": 3,
+        "CoordinatorAgent": 4
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "domain": "",
+    "scene_name": "work_hours_and_overtime_in_labor_law",
+    "odd_protocol": {
+        "overview": {},
+        "design_concepts": {},
+        "details": {}
+    },
+    "agent_types": {
+        "CoordinatorAgent": "Manages and oversees the interactions between various agents, ensuring system-wide objectives are met.",
+        "WorkerAgent": "Performs specific tasks or computations as directed by the CoordinatorAgent, contributing to the overall goal of the system.",
+        "CommunicationAgent": "Facilitates communication between agents, ensuring information is efficiently transmitted and understood among participants.",
+        "MonitoringAgent": "Observes system performance and activities, reporting anomalies or performance metrics to the CoordinatorAgent for corrective actions.",
+        "DecisionAgent": "Analyzes information gathered from other agents and external sources to make informed decisions to guide the system's actions towards its objectives."
+    },
+    "portrait": {
+        "CoordinatorAgent": 1,
+        "WorkerAgent": 3,
+        "CommunicationAgent": 2,
+        "MonitoringAgent": 5,
+        "DecisionAgent": 4
+    }
+}

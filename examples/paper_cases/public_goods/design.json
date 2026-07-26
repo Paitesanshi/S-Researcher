@@ -1,0 +1,11 @@
+{
+  "paradigm": "abductive",
+  "environment": "public_goods_leadership_dynamics",
+  "design": "2 x 3 between-condition simulation",
+  "mechanisms": ["voluntary", "forced"],
+  "leader_contributions": [2, 5, 8],
+  "followers_per_condition": 100,
+  "replicates_per_condition": 3,
+  "replicate_seeds": [10001, 10002, 10003],
+  "human_participant_data_included": false
+}

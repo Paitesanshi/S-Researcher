@@ -1,0 +1,141 @@
+{
+    "WorkerAgent": [
+        {
+            "id": 1,
+            "name": "receive_leadership_attention",
+            "condition": "null",
+            "description": "WorkerAgent receives attention from LeaderAgent, which influences their emotional state and productivity.",
+            "type": "OR",
+            "required_variables": [
+                {
+                    "name": "leadership_attention_level",
+                    "type": "integer",
+                    "context": "event",
+                    "description": "Level of leadership attention received by WorkerAgent."
+                },
+                {
+                    "name": "feedback_content",
+                    "type": "string",
+                    "context": "event",
+                    "description": "Content of the feedback provided by LeaderAgent."
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "emotional_state",
+                    "type": "string",
+                    "context": "agent",
+                    "description": "Updated emotional state of WorkerAgent after receiving leadership attention."
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "adjust_productivity",
+            "condition": "AttentionReceivedEvent and TeamSupportEvent",
+            "description": "WorkerAgent adjusts their productivity based on received leadership attention and team support.",
+            "type": "AND",
+            "required_variables": [
+                {
+                    "name": "leadership_attention_level",
+                    "type": "integer",
+                    "context": "agent",
+                    "description": "Current level of leadership attention influencing WorkerAgent."
+                },
+                {
+                    "name": "support_type",
+                    "type": "string",
+                    "context": "event",
+                    "description": "Type of support provided by TeamAgent."
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "productivity_level",
+                    "type": "integer",
+                    "context": "agent",
+                    "description": "Adjusted productivity level of WorkerAgent."
+                }
+            ]
+        }
+    ],
+    "LeaderAgent": [
+        {
+            "id": 3,
+            "name": "provide_feedback_and_tasks",
+            "condition": "null",
+            "description": "LeaderAgent provides feedback and assigns tasks to WorkerAgent to enhance their productivity.",
+            "type": "OR",
+            "required_variables": [
+                {
+                    "name": "worker_id",
+                    "type": "string",
+                    "context": "event",
+                    "description": "Identifier for the WorkerAgent receiving feedback."
+                },
+                {
+                    "name": "task_assigned",
+                    "type": "string",
+                    "context": "event",
+                    "description": "Task assigned to WorkerAgent along with feedback."
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "feedback_log",
+                    "type": "string",
+                    "context": "agent",
+                    "description": "Log of feedback provided to WorkerAgent."
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "name": "evaluate_employee_response",
+            "condition": "null",
+            "description": "LeaderAgent evaluates the response of WorkerAgent to the feedback and tasks provided.",
+            "type": "OR",
+            "required_variables": [
+                {
+                    "name": "response_message",
+                    "type": "string",
+                    "context": "event",
+                    "description": "Message sent by WorkerAgent in response to leadership attention."
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "evaluation_outcome",
+                    "type": "string",
+                    "context": "agent",
+                    "description": "Outcome of the evaluation performed by LeaderAgent."
+                }
+            ]
+        }
+    ],
+    "TeamAgent": [
+        {
+            "id": 5,
+            "name": "initiate_team_interaction",
+            "condition": "null",
+            "description": "TeamAgent initiates interaction among team members to provide emotional support and enhance productivity.",
+            "type": "OR",
+            "required_variables": [
+                {
+                    "name": "interaction_details",
+                    "type": "string",
+                    "context": "event",
+                    "description": "Details of interaction initiated by TeamAgent."
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "team_atmosphere",
+                    "type": "string",
+                    "context": "env",
+                    "description": "Updated atmosphere within the team after interaction."
+                }
+            ]
+        }
+    ]
+}

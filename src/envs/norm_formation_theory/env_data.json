@@ -1,0 +1,8 @@
+{
+    "behavior_tendencies": [
+        "cooperative",
+        "competitive",
+        "neutral"
+    ],
+    "group_pressure": 0.75
+}

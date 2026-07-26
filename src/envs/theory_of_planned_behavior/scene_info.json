@@ -1,0 +1,23 @@
+{
+    "domain": "",
+    "scene_name": "theory_of_planned_behavior",
+    "odd_protocol": {
+        "overview": {},
+        "design_concepts": {},
+        "details": {}
+    },
+    "agent_types": {
+        "ObserverAgent": "Collects data and monitors the environment to provide updated information for other agents in the system.",
+        "DecisionAgent": "Analyzes data and makes decisions based on predefined rules or learned strategies to guide system actions.",
+        "CoordinatorAgent": "Facilitates communication and cooperation among agents to ensure synchronized actions and efficient task execution.",
+        "ResourceAgent": "Manages and allocates resources within the system to optimize performance and achieve system goals.",
+        "MaintenanceAgent": "Monitors system health and performs necessary updates or repairs to maintain optimal functionality."
+    },
+    "portrait": {
+        "ObserverAgent": 1,
+        "DecisionAgent": 3,
+        "CoordinatorAgent": 5,
+        "ResourceAgent": 4,
+        "MaintenanceAgent": 2
+    }
+}

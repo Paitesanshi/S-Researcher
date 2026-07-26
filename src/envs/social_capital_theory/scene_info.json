@@ -1,0 +1,23 @@
+{
+    "domain": "",
+    "scene_name": "social_capital_theory",
+    "odd_protocol": {
+        "overview": {},
+        "design_concepts": {},
+        "details": {}
+    },
+    "agent_types": {
+        "EnvironmentMonitor": "Responsible for collecting data about the environment in which the agents operate, such as temperature, humidity, and light levels.",
+        "TaskAssigner": "Manages the distribution of tasks among the agents based on their capabilities and the current workload.",
+        "SensorController": "Controls and manages various sensors used by the agents to gather information from the environment.",
+        "DataProcessor": "Processes raw data collected by sensors and monitors to derive meaningful insights and make decisions based on this data.",
+        "CommunicationCoordinator": "Facilitates communication between different agents and external systems, ensuring that information is exchanged efficiently and effectively."
+    },
+    "portrait": {
+        "EnvironmentMonitor": 3,
+        "TaskAssigner": 4,
+        "SensorController": 3,
+        "DataProcessor": 5,
+        "CommunicationCoordinator": 1
+    }
+}

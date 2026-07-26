@@ -1,0 +1,39 @@
+{
+    "3": {
+        "id": 3,
+        "from_agent_type": "FollowerAgent",
+        "from_action_name": "adjust_contribution",
+        "to_agent_type": "EnvAgent",
+        "to_action_name": "terminate",
+        "from_action_id": 3,
+        "to_action_id": -1,
+        "event_name": "FollowerContributionResultEvent",
+        "event_info": "Follower decides on their contribution based on leader’s perceived sincerity and fairness",
+        "fields": [
+            {
+                "name": "actual_contribution",
+                "type": "float",
+                "default_value": 0,
+                "description": "The actual contribution level decided by the follower"
+            },
+            {
+                "name": "completion_status",
+                "type": "str",
+                "default_value": "pending",
+                "description": "The status of the follower's decision-making process"
+            }
+        ]
+    },
+    "-1": {
+        "id": -1,
+        "from_agent_type": "EnvAgent",
+        "from_action_name": "start",
+        "to_agent_type": "LeaderAgent",
+        "to_action_name": "decide_contribution",
+        "from_action_id": 0,
+        "to_action_id": 1,
+        "event_name": "StartEvent",
+        "event_info": "Initial trigger for Leader agent to decide on contribution level",
+        "fields": []
+    }
+}

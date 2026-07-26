@@ -1,0 +1,243 @@
+{
+  "agents": {
+    "TeacherAgent": {
+      "imports": "from typing import Any, List, Optional, Dict\nimport asyncio\nfrom loguru import logger\nfrom onesim.models import JsonBlockParser\nfrom onesim.agent import GeneralAgent\nfrom onesim.profile import AgentProfile\nfrom onesim.memory import MemoryStrategy\nfrom onesim.planning import PlanningBase\nfrom onesim.relationship import RelationshipManager\nfrom .events import *",
+      "handlers": {
+        "1": {
+          "code": "async def pose_question(self, event: Event) -> List[Event]:\n        question_content = await self.get_env_data(\"question_content\", \"\")\n        if not question_content:\n            logger.error(\"Failed to fetch valid question content.\")\n            return []\n        \n        observation = f\"Question Content: {question_content}\"\n        instruction = \"\"\"\n        Please determine the target student agents to pose the question based on their communicative expression and background characteristics.\n        Return the information in the following JSON format:\n    \n        {\n        \"target_ids\": [\"<List of Student Agent IDs>\"]\n        }\n        \"\"\"\n        result = await self.generate_reaction(instruction, observation)\n        if result is None:\n            logger.error(\"Failed to generate a valid reaction.\")\n            return []\n        \n        target_ids = result.get('target_ids', [])\n        if not isinstance(target_ids, list):\n            target_ids = [target_ids]\n        events = []\n        for target_id in target_ids:\n            question_posed_event = QuestionPosedEvent(self.profile_id, target_id)\n            events.append(question_posed_event)\n        \n        question_log = self.profile.get_data(\"question_log\", [])\n        question_log.append(question_content)\n        self.profile.update_data(\"question_log\", question_log)\n        \n        return events",
+          "metadata": {
+            "id": 1,
+            "name": "pose_question",
+            "condition": null,
+            "description": "The Teacher Agent poses a question to engage Student Agents and elicit responses for evaluation. This action sets the stage for interaction and attention allocation decisions.",
+            "type": "OR",
+            "required_variables": [
+              {
+                "name": "question_content",
+                "type": "str",
+                "context": "env",
+                "description": "The content of the question posed by the Teacher Agent in the simulation classroom."
+              }
+            ],
+            "output_updates": [
+              {
+                "name": "question_log",
+                "type": "list",
+                "context": "agent",
+                "description": "A log of all posed questions for tracking and reference."
+              }
+            ]
+          }
+        },
+        "2": {
+          "code": "async def evaluate_responses(self, event: ResponseProvidedEvent) -> List[Event]:\n        question_log = self.profile.get_data(\"question_log\", [])\n        if not question_log:\n            return []\n        \n        response_content = event.response_content\n        response_type = event.response_type\n        student_id = event.student_id\n        background_data = event.background_data\n        \n        teacher_criteria = self.profile.get_data(\"teacher_criteria\", \"\")\n        observation = (\n            f\"Evaluating response from student {student_id}. \"\n            f\"Response content: {response_content}, type: {response_type}. \"\n            f\"Background data: {background_data}. Teacher criteria: {teacher_criteria}.\"\n        )\n        \n        instruction = \"\"\"Evaluate the response from the Student Agent based on expressive behavior and background characteristics according to the defined Teacher Agent criteria.\n        Determine which Student Agents should receive attention allocation based on evaluation criteria.\n        Please return the information in the following JSON format:\n        \n        {\n            \"allocated_attention\": <a float indicating the amount of attention allocated>,\n            \"evaluation_criteria\": \"<criteria used for evaluation>\",\n            \"target_ids\": [\"<List of Student Agent IDs that met the evaluation criteria>\"]\n        }\n        \"\"\"\n        result = await self.generate_reaction(instruction, observation)\n        if result is None:\n            logger.error(\"Failed to generate a valid reaction.\")\n            return []\n        \n        allocated_attention = result.get('allocated_attention', 0.0)\n        evaluation_criteria = result.get('evaluation_criteria', \"\")\n        target_ids = result.get('target_ids', [student_id])\n        if not isinstance(target_ids, list):\n            target_ids = [target_ids]\n        \n        if len(target_ids) == 0:\n            logger.error(\"No valid student agents to allocate attention.\")\n            return []\n\n        events = []\n        attention_allocation_per_student = allocated_attention / len(target_ids)\n        attention_distribution = self.profile.get_data(\"attention_distribution\", [])\n        \n        for target_id in target_ids:\n            attention_event = AttentionAllocatedEvent(\n                self.profile_id,\n                \"ENV\",\n                allocated_attention=attention_allocation_per_student,\n                evaluation_criteria=evaluation_criteria,\n                student_ids=target_ids\n            )\n            events.append(attention_event)\n            attention_distribution.append({\n                \"student_id\": target_id,\n                \"allocated_attention\": attention_allocation_per_student\n            })\n        \n        self.profile.update_data(\"attention_distribution\", attention_distribution)\n        \n        return events",
+          "metadata": {
+            "id": 2,
+            "name": "evaluate_responses",
+            "condition": "QuestionPosedEvent received and responses from StudentAgent are available",
+            "description": "The Teacher Agent evaluates responses from Student Agents based on expressive behavior and background characteristics, allocating attention according to the defined criteria and then concluding the interaction.",
+            "type": "AND",
+            "required_variables": [
+              {
+                "name": "response_content",
+                "type": "str",
+                "context": "event",
+                "description": "The content of the response given by the Student Agent."
+              },
+              {
+                "name": "response_type",
+                "type": "str",
+                "context": "event",
+                "description": "Type of response provided (verbal or non-verbal)."
+              },
+              {
+                "name": "student_id",
+                "type": "str",
+                "context": "event",
+                "description": "The identifier of the Student Agent providing the response."
+              },
+              {
+                "name": "background_data",
+                "type": "dict",
+                "context": "event",
+                "description": "A dictionary containing socioeconomic and academic background data of the Student Agent."
+              },
+              {
+                "name": "teacher_criteria",
+                "type": "str",
+                "context": "agent",
+                "description": "Criteria defined by Teacher Agent for response evaluation, including communication skill and background characteristics."
+              }
+            ],
+            "output_updates": [
+              {
+                "name": "allocated_attention",
+                "type": "float",
+                "context": "env",
+                "description": "The amount of attention allocated to each Student Agent based on evaluation criteria."
+              },
+              {
+                "name": "attention_distribution",
+                "type": "list",
+                "context": "agent",
+                "description": "Record of attention distribution among Student Agents for analysis and feedback."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "StudentAgent": {
+      "imports": "from typing import Any, List\nimport json\nimport asyncio\nfrom onesim.models import JsonBlockParser\nfrom onesim.agent import GeneralAgent\nfrom onesim.profile import AgentProfile\nfrom onesim.memory import MemoryStrategy\nfrom onesim.planning import PlanningBase\nfrom onesim.events import Event\nfrom onesim.relationship import RelationshipManager\nfrom .events import ResponseProvidedEvent, QuestionPosedEvent",
+      "handlers": {
+        "3": {
+          "code": "async def respond_to_question(self, event: Event) -> List[Event]:\n        # Check if the event is of type 'QuestionPosedEvent'\n        if not isinstance(event, QuestionPosedEvent):\n            return []\n        \n        # Access agent-specific data\n        expressive_skills = self.profile.get_data(\"expressive_skills\", {})\n        background_data = self.profile.get_data(\"background_data\", {})\n        \n        # Ensure expressive skills and background data are initialized\n        if not expressive_skills or not background_data:\n            return []\n    \n        # Prepare observation and instruction for generating a reaction\n        observation = f\"Expressive Skills: {expressive_skills}, Background Data: {background_data}\"\n        instruction = \"\"\"You are generating a response to a teacher's posed question as a Student Agent.\n        Considering your expressive skills and background data, please generate your response.\n        Ensure the response type matches either verbal or non-verbal cues.\n        Please return the information in the following JSON format:\n       \n        {\n            \"response_content\": \"<The content of your response>\",\n            \"response_type\": \"<Type of the response (verbal/non-verbal)>\",\n            \"target_ids\": [\"<The string ID(s) of TeacherAgent receiving the response>\"]\n        }\n        \"\"\"\n        \n        result = await self.generate_reaction(instruction, observation)\n        \n        if not result:\n            result = {}  # Initialize result as an empty dictionary if None\n        \n        response_content = result.get('response_content', \"\")\n        response_type = result.get('response_type', \"verbal\")\n        target_ids = result.get('target_ids', [])\n        \n        # Ensure target_ids is a list and contains the valid teacher ID if not provided\n        if not isinstance(target_ids, list):\n            target_ids = [target_ids]\n        \n        if not target_ids:\n            target_ids = [\"default_teacher_id\"]  # Use a valid default teacher ID\n        \n        events = []\n        for target_id in target_ids:\n            response_event = ResponseProvidedEvent(self.profile_id, target_id, response_content=response_content, \n                                                   response_type=response_type, student_id=self.profile_id, \n                                                   background_data=background_data)\n            events.append(response_event)\n        \n        return events",
+          "metadata": {
+            "id": 3,
+            "name": "respond_to_question",
+            "condition": "QuestionPosedEvent received",
+            "description": "The Student Agent provides a response to the posed question, utilizing verbal and non-verbal cues, influenced by their expressive skills and background attributes.",
+            "type": "OR",
+            "required_variables": [
+              {
+                "name": "expressive_skills",
+                "type": "dict",
+                "context": "agent",
+                "description": "Expressive skill levels of the Student Agent, influencing their response style and content."
+              },
+              {
+                "name": "background_data",
+                "type": "dict",
+                "context": "agent",
+                "description": "Socioeconomic and academic background data of the Student Agent influencing their response dynamics."
+              }
+            ],
+            "output_updates": [
+              {
+                "name": "response_content",
+                "type": "str",
+                "context": "event",
+                "description": "The content of the response provided by the Student Agent."
+              },
+              {
+                "name": "response_type",
+                "type": "str",
+                "context": "agent",
+                "description": "Type of response provided by the Student Agent (verbal or non-verbal)."
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "events": {
+    "imports": "from onesim.events import Event\nfrom typing import List, Dict",
+    "definitions": {
+      "-1": {
+        "code": "class StartEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str\n    ) -> None:\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id)\n        # No additional fields are specified for this event",
+        "metadata": {
+          "id": -1,
+          "from_agent_type": "EnvAgent",
+          "from_action_name": "start",
+          "to_agent_type": "TeacherAgent",
+          "to_action_name": "pose_question",
+          "from_action_id": 0,
+          "to_action_id": 1,
+          "event_name": "StartEvent",
+          "event_info": "Initial trigger for teacher-agent to pose questions in the classroom simulation",
+          "fields": []
+        }
+      },
+      "1": {
+        "code": "class QuestionPosedEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str\n    ) -> None:\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id)\n        # No additional fields are specified for this event",
+        "metadata": {
+          "id": 1,
+          "from_agent_type": "TeacherAgent",
+          "from_action_name": "pose_question",
+          "to_agent_type": "StudentAgent",
+          "to_action_name": "respond_to_question",
+          "from_action_id": 1,
+          "to_action_id": 3,
+          "event_name": "QuestionPosedEvent",
+          "event_info": "Teacher agent poses a question to all student agents",
+          "fields": []
+        }
+      },
+      "2": {
+        "code": "class AttentionAllocatedEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str,\n        allocated_attention: float = 0.0,\n        evaluation_criteria: str = \"\",\n        student_ids: List[str] = None\n    ) -> None:\n        if student_ids is None:\n            student_ids = []\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id)\n        self.allocated_attention = allocated_attention\n        self.evaluation_criteria = evaluation_criteria\n        self.student_ids = student_ids",
+        "metadata": {
+          "id": 2,
+          "from_agent_type": "TeacherAgent",
+          "from_action_name": "evaluate_responses",
+          "to_agent_type": "EnvAgent",
+          "to_action_name": "terminate",
+          "from_action_id": 2,
+          "to_action_id": -1,
+          "event_name": "AttentionAllocatedEvent",
+          "event_info": "Teacher agent evaluates responses and allocates attention based on predefined criteria",
+          "fields": [
+            {
+              "name": "allocated_attention",
+              "type": "float",
+              "default_value": "0.0",
+              "description": "The amount of attention allocated to each student agent based on evaluation criteria."
+            },
+            {
+              "name": "evaluation_criteria",
+              "type": "str",
+              "default_value": "",
+              "description": "Criteria used by the Teacher Agent while evaluating student responses, such as communicative expression and socio-academic background."
+            },
+            {
+              "name": "student_ids",
+              "type": "list",
+              "default_value": "[]",
+              "description": "The list of student agent IDs that received attention."
+            }
+          ]
+        }
+      },
+      "3": {
+        "code": "class ResponseProvidedEvent(Event):\n    def __init__(self,\n        from_agent_id: str,\n        to_agent_id: str,\n        response_content: str = \"\",\n        response_type: str = 'verbal',\n        student_id: str = \"\",\n        background_data: Dict = None\n    ) -> None:\n        if background_data is None:\n            background_data = {}\n        super().__init__(from_agent_id=from_agent_id, to_agent_id=to_agent_id)\n        self.response_content = response_content\n        self.response_type = response_type\n        self.student_id = student_id\n        self.background_data = background_data",
+        "metadata": {
+          "id": 3,
+          "from_agent_type": "StudentAgent",
+          "from_action_name": "respond_to_question",
+          "to_agent_type": "TeacherAgent",
+          "to_action_name": "evaluate_responses",
+          "from_action_id": 3,
+          "to_action_id": 2,
+          "event_name": "ResponseProvidedEvent",
+          "event_info": "Student agent provides a response to the teacher's question",
+          "fields": [
+            {
+              "name": "response_content",
+              "type": "str",
+              "default_value": "",
+              "description": "The content of the response given by the student agent."
+            },
+            {
+              "name": "response_type",
+              "type": "str",
+              "default_value": "verbal",
+              "description": "Type of response provided (verbal or non-verbal)."
+            },
+            {
+              "name": "student_id",
+              "type": "str",
+              "default_value": "",
+              "description": "The identifier of the student agent providing the response."
+            },
+            {
+              "name": "background_data",
+              "type": "dict",
+              "default_value": "{}",
+              "description": "A dictionary containing socioeconomic and academic background data of the student agent."
+            }
+          ]
+        }
+      }
+    }
+  }
+}

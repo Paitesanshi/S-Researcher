@@ -1,0 +1,23 @@
+{
+    "domain": "",
+    "scene_name": "voting",
+    "odd_protocol": {
+        "overview": {},
+        "design_concepts": {},
+        "details": {}
+    },
+    "agent_types": {
+        "CoordinatorAgent": "Responsible for orchestrating interactions between different agents to ensure smooth collaboration and task fulfillment within the system.",
+        "ObserverAgent": "Monitors the environment and agent activities, gathering valuable data and providing feedback to improve the system's overall performance.",
+        "ActionAgent": "Executes specific tasks or actions as determined by the system's objectives, typically based on inputs from other agents or the environment.",
+        "CommunicatorAgent": "Facilitates communication among agents, ensuring that information is effectively shared and understood for coordinated decision-making.",
+        "ResourceManagerAgent": "Manages system resources, allocating them efficiently to various agents based on current needs and priorities."
+    },
+    "portrait": {
+        "CoordinatorAgent": 1,
+        "ObserverAgent": 5,
+        "ActionAgent": 3,
+        "CommunicatorAgent": 2,
+        "ResourceManagerAgent": 4
+    }
+}

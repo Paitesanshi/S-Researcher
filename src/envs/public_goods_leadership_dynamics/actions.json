@@ -1,0 +1,69 @@
+{
+    "LeaderAgent": [
+        {
+            "id": 1,
+            "name": "decide_contribution",
+            "condition": "Mechanism selection: voluntary or forced",
+            "description": "The leader determines the level of contribution to the public goods pool, choosing either a voluntary or forced decision-making mechanism.",
+            "type": "OR",
+            "required_variables": [],
+            "output_updates": [
+                {
+                    "name": "contribution_level",
+                    "type": "float",
+                    "context": "agent",
+                    "description": "The level of contribution chosen by the leader."
+                },
+                {
+                    "name": "selected_mechanism",
+                    "type": "str",
+                    "context": "agent",
+                    "description": "The decision mechanism used by the leader, either 'voluntary' or 'forced'."
+                }
+            ]
+        }
+    ],
+    "FollowerAgent": [
+        {
+            "id": 3,
+            "name": "adjust_contribution",
+            "condition": "Receipt of FollowerContributionDecisionEvent",
+            "description": "Based on the observation of the leader's action, the follower adjusts their own contribution to the public goods pool.",
+            "type": "OR",
+            "required_variables": [
+                {
+                    "name": "analyzed_contribution_level",
+                    "type": "float",
+                    "context": "agent",
+                    "description": "The analyzed contribution level perceived by the follower from the leader's actions."
+                },
+                {
+                    "name": "perceived_fairness",
+                    "type": "str",
+                    "context": "agent",
+                    "description": "The follower's perception of the fairness of the leader's contribution."
+                },
+                {
+                    "name": "perceived_intent",
+                    "type": "str",
+                    "context": "agent",
+                    "description": "The follower's perception of the sincerity of the leader's intent."
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "actual_contribution",
+                    "type": "float",
+                    "context": "agent",
+                    "description": "The actual contribution level decided by the follower."
+                },
+                {
+                    "name": "completion_status",
+                    "type": "str",
+                    "context": "agent",
+                    "description": "The status of the follower's decision-making process."
+                }
+            ]
+        }
+    ]
+}

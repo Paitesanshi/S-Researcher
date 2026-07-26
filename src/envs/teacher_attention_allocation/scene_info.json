@@ -1,0 +1,118 @@
+{
+  "domain": "",
+  "scene_name": "teacher_attention_allocation",
+  "odd_protocol": {
+    "overview": {
+      "system_goal": "The system aims to simulate classroom interactions to understand the factors influencing teacher attention allocation among students, focusing on communicative expression versus socioeconomic or academic background.",
+      "agent_types": "The simulation includes Teacher Agents responsible for allocating attention and Student Agents with varied levels of expressive skills, academic performance, and socioeconomic status.",
+      "environment_description": "The environment represents a classroom setting where Teacher Agents pose questions, and Student Agents respond with verbal and non-verbal cues. The environment captures interactions influenced by personal and socio-academic factors.",
+      "agent_interaction_focus": "The primary focus is on Teacher Agents' decision-making process in selecting Student Agents to answer questions, based on their communicative expression, socioeconomic, and academic background."
+    },
+    "design_concepts": {
+      "interaction_patterns": "Teacher Agents interact with Student Agents by asking questions and evaluating their responses based on expressive behavior and background characteristics.",
+      "communication_protocols": "Communication occurs through verbal questions from Teacher Agents and verbal and non-verbal responses from Student Agents, influenced by predefined decision logics.",
+      "decision_mechanisms": "Teacher Agents use a combination of thresholds for communicative expression, socioeconomic influence, and a dynamic weighting model to make attention allocation decisions.",
+      "attention_distribution_measurement": "Attention inequality is measured using simulated Gini coefficients, assessing the disparity in attention based on various student attributes."
+    },
+    "details": {
+      "agent_behaviors": "Teacher Agents prioritize attention based on communicative expression and consider socioeconomic and academic backgrounds, while Student Agents exhibit expressive behaviors influenced by their profiles.",
+      "decision_algorithms": "Three decision algorithms are used: a communication threshold model, a social influence model, and a dynamic hybrid model combining multiple student characteristics.",
+      "specific_constraints": "Constraints include predefined thresholds for communication skill influence and a weighting system balancing expressive, academic, and socioeconomic factors.",
+      "simulation_parameters": "Key parameters include communication threshold, social influence weight, and dynamic weight adjustments for communication, academic, and background attributes."
+    }
+  },
+  "metrics": [
+    {
+      "id": "attention_gini_coefficient",
+      "name": "attention_gini_coefficient",
+      "description": "Calculates the Gini coefficient of attention distribution to measure inequality. Range [0, 1]: 0 = perfect equality, 1 = perfect inequality. This is the core metric for analyzing whether teacher attention is distributed fairly or concentrates on certain students.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "variables": [
+        {
+          "name": "attention_distribution",
+          "source_type": "agent",
+          "agent_type": "TeacherAgent",
+          "path": "attention_distribution",
+          "required": true,
+          "is_list": true
+        }
+      ],
+      "calculation_logic": "Aggregate attention_distribution records from all TeacherAgents. Each record contains {selected_student_id, attention_value, ...}. Sum attention_value for each unique student_id. Sort the aggregated attention values and apply the Gini coefficient formula: G = (2 * sum(i * x_i)) / (n * sum(x_i)) - (n+1)/n. Returns time-series data showing how inequality evolves.",
+      "function_name": "attention_gini_coefficient"
+    },
+    {
+      "id": "student_attention_summary",
+      "name": "student_attention_summary",
+      "description": "Summarizes attention received by each student, including total attention, selection count, and average attention per selection. Provides detailed breakdown for identifying which students receive more/less attention.",
+      "visualization_type": "bar",
+      "update_interval": 5,
+      "variables": [
+        {
+          "name": "attention_distribution",
+          "source_type": "agent",
+          "agent_type": "TeacherAgent",
+          "path": "attention_distribution",
+          "required": true,
+          "is_list": true
+        }
+      ],
+      "calculation_logic": "Aggregate all attention_distribution records across TeacherAgents. For each unique selected_student_id, sum attention_value (total attention) and count occurrences (selection count). Calculate average attention per selection. Returns dictionary with labels (student IDs), total_attention, selection_count, and avg_attention_per_selection arrays.",
+      "function_name": "student_attention_summary"
+    },
+    {
+      "id": "hand_raising_effectiveness",
+      "name": "hand_raising_effectiveness",
+      "description": "Analyzes the relationship between hand-raising behavior and being selected. Compares selection rates for students who raised hands versus those who did not. Helps understand if teachers preferentially select hand-raisers or actively engage non-participants.",
+      "visualization_type": "bar",
+      "update_interval": 5,
+      "variables": [
+        {
+          "name": "attention_distribution",
+          "source_type": "agent",
+          "agent_type": "TeacherAgent",
+          "path": "attention_distribution",
+          "required": true,
+          "is_list": true
+        },
+        {
+          "name": "raise_hand_history",
+          "source_type": "agent",
+          "agent_type": "StudentAgent",
+          "path": "raise_hand_history",
+          "required": true,
+          "is_list": true
+        }
+      ],
+      "calculation_logic": "Combine attention_distribution (teacher selections) and raise_hand_history (student behaviors). Count total students who raised hands vs. did not raise hands. Count how many from each group were selected. Calculate selection rates: raised_selected_rate = selected_raisers / total_raisers, not_raised_selected_rate = selected_non_raisers / total_non_raisers. Returns comparison statistics.",
+      "function_name": "hand_raising_effectiveness"
+    },
+    {
+      "id": "question_difficulty_impact",
+      "name": "question_difficulty_impact",
+      "description": "Analyzes how question difficulty affects teacher selection patterns. Shows whether teachers select more/fewer students for questions of different difficulty levels. Helps understand if attention distribution strategies vary by task complexity.",
+      "visualization_type": "bar",
+      "update_interval": 5,
+      "variables": [
+        {
+          "name": "attention_distribution",
+          "source_type": "agent",
+          "agent_type": "TeacherAgent",
+          "path": "attention_distribution",
+          "required": true,
+          "is_list": true
+        }
+      ],
+      "calculation_logic": "Extract difficulty and total_selected from each attention_distribution record. Group records by difficulty level (discretized to 0.1 precision). For each difficulty level, calculate average number of students selected per round. Returns arrays: difficulty_levels, avg_students_per_round, and total_rounds for each difficulty.",
+      "function_name": "question_difficulty_impact"
+    }
+  ],
+  "agent_types": {
+    "TeacherAgent": "Responsible for allocating attention among students based on their communicative expression, socioeconomic status, and academic performance, simulating how educators make decisions in a classroom setting.",
+    "StudentAgent": "Exhibits varied levels of expressive skills and characteristics such as socioeconomic status and academic performance, influencing how they are perceived and selected for interactions by Teacher Agents in the simulation."
+  },
+  "portrait": {
+    "TeacherAgent": 2,
+    "StudentAgent": 5
+  }
+}

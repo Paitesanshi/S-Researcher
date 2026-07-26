@@ -1,0 +1,7 @@
+{
+    "topology": "star",
+    "params": {
+        "central_agent": "MediaAgent",
+        "branching_factor": 5
+    }
+}

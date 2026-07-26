@@ -1,0 +1,92 @@
+{
+    "id": {
+        "type": "str",
+        "default": "",
+        "private": true,
+        "sampling": "default",
+        "description": "Unique student id (CEPS `ids`, cast to string)"
+    },
+    "agent_type": {
+        "type": "str",
+        "default": "StudentAgent",
+        "private": false,
+        "sampling": "default",
+        "description": "Agent class tag"
+    },
+    "name": {
+        "type": "str",
+        "default": "",
+        "private": false,
+        "sampling": "default",
+        "description": "Deterministic pseudonym generated from id (no LLM)"
+    },
+    "class_id": {
+        "type": "str",
+        "default": "",
+        "private": true,
+        "sampling": "default",
+        "description": "Class id (CEPS `clsids`, cast to string)"
+    },
+    "school_id": {
+        "type": "str",
+        "default": "",
+        "private": true,
+        "sampling": "default",
+        "description": "School id (CEPS `schids`, cast to string)"
+    },
+
+    "profile_public": {
+        "type": "dict",
+        "default": {
+            "family_economy": "unknown",
+            "parent_education": "unknown",
+            "migration_status": "unknown",
+            "academic_level": "medium",
+            "communication_level": "medium",
+            "socioeconomic_level": "medium",
+            "hand_raise_tendency": "medium",
+            "gesture_examples": [
+                "Raises a hand to shoulder height and waits",
+                "Looks at the teacher and nods"
+            ],
+            "expression_strategy": "Give the main point, explain briefly, and acknowledge uncertainty."
+        },
+        "private": false,
+        "sampling": "default",
+        "description": "Human-readable attributes designed to be directly included in the LLM prompt (no outcome leakage)."
+    },
+    "prompt_summary": {
+        "type": "str",
+        "default": "",
+        "private": false,
+        "sampling": "default",
+        "description": "One-paragraph English summary of the student for prompting (no teacher-attention outcomes)."
+    },
+
+    "latent_traits": {
+        "type": "dict",
+        "default": {
+            "ses_01": null,
+            "ability_01": null,
+            "comm_skill_01": null,
+            "comm_willing_01": null
+        },
+        "private": true,
+        "sampling": "default",
+        "description": "Numeric traits in [0,1] for simulation internals; keep private from LLM prompt."
+    },
+    "raw_ceps": {
+        "type": "dict",
+        "default": {},
+        "private": true,
+        "sampling": "default",
+        "description": "Optional raw CEPS codes/values (for auditing). Keep private from prompt."
+    },
+    "observed_outcomes": {
+        "type": "dict",
+        "default": {},
+        "private": true,
+        "sampling": "default",
+        "description": "Teacher attention outcomes (w2b0504-0509, w2b0603, etc.). Should NOT be included in prompt; generated only if --include_outcomes=1."
+    }
+}

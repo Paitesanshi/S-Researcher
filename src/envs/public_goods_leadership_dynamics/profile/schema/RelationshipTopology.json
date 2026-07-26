@@ -1,0 +1,6 @@
+{
+    "topology": "star",
+    "params": {
+        "central_agent": "LeaderAgent"
+    }
+}

@@ -1,0 +1,34 @@
+{
+    "available_media_sources": [
+        {
+            "name": "LiberalVoice",
+            "bias": "Left",
+            "content_type": "News",
+            "political_focus": "Progressivism"
+        },
+        {
+            "name": "ConservativeWatch",
+            "bias": "Right",
+            "content_type": "Opinion",
+            "political_focus": "Traditionalism"
+        },
+        {
+            "name": "BalancedView",
+            "bias": "Center",
+            "content_type": "Analysis",
+            "political_focus": "Moderation"
+        },
+        {
+            "name": "TechTrendsDaily",
+            "bias": "Left",
+            "content_type": "Technology",
+            "political_focus": "Innovation"
+        },
+        {
+            "name": "EconomicInsight",
+            "bias": "Right",
+            "content_type": "Economics",
+            "political_focus": "Free-Market"
+        }
+    ]
+}

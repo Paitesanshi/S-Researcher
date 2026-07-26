@@ -1,0 +1,57 @@
+{
+    "simulator": {
+        "environment": {
+            "name": "generated_environment",
+            "mode": "round",
+            "max_steps": 10,
+            "interval": 0.0,
+            "bus_idle_timeout": 60.0,
+            "export_training_data": false,
+            "export_event_data": false,
+            "collection_interval": 1,
+            "additional_config": {
+                "export_event_flow": false,
+                "event_flow_output_file": "event_flow.json"
+            }
+        }
+    },
+    "agent": {
+        "profile": {},
+        "memory": {
+            "strategy": "ListStrategy",
+            "storages": {
+                "simple_memory_storage": {
+                    "class": "ListMemoryStorage",
+                    "capacity": 100
+                }
+            },
+            "metric_weights": {},
+            "transfer_conditions": {},
+            "operations": {
+                "add": {
+                    "class": "AddMemoryOperation"
+                },
+                "retrieve": {
+                    "class": "RetrieveMemoryOperation"
+                },
+                "remove": {
+                    "class": "RemoveMemoryOperation"
+                }
+            },
+            "metrics": {}
+        }
+    },
+    "database": {
+        "enabled": false
+    },
+    "distribution": {
+        "enabled": false,
+        "mode": "single",
+        "node_id": "1",
+        "master_address": "localhost",
+        "master_port": 10051
+    },
+    "monitor": {
+        "enabled": true
+    }
+}

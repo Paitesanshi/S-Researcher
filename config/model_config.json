@@ -1,0 +1,18 @@
+{
+    "chat": [
+        {
+            "provider": "${LLM_PROVIDER:-openai}",
+            "config_name": "default-chat",
+            "model_name": "${LLM_MODEL}",
+            "api_key": "${LLM_API_KEY}",
+            "client_args": {
+                "max_retries": 3,
+                "base_url": "${LLM_BASE_URL:-https://api.openai.com/v1}"
+            },
+            "generate_args": {
+                "temperature": 0.2
+            }
+        }
+    ],
+    "embedding": []
+}

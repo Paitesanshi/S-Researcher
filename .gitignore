@@ -1,0 +1,78 @@
+# Python bytecode and caches
+**/__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.tox/
+.nox/
+
+# Virtual environments and packaging
+.venv/
+venv/
+ENV/
+.Python
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+*.egg-info/
+*.egg
+MANIFEST
+
+# Coverage and test outputs
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+nosetests.xml
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Secrets and machine-local configuration
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+config/model_config.local.json
+
+# Logs and process state
+*.log
+*.pid
+logs/
+log/
+
+# Root-level generated workspace state
+/projects/
+/artifacts/
+/runs/
+/input/
+/datasets/
+/models/
+/saves/
+/wandb/
+/mlruns/
+/node_modules/
+
+# Generated environment state; curated source and schemas remain tracked
+/src/envs/*/profile/data/
+/src/envs/*/relationship/data/
+/src/envs/*/events/
+/src/envs/*/runs/
+/src/envs/*/logs/
+/src/envs/*/log/
+/src/envs/*/metrics_plots*/
+
+# Miscellaneous generated files
+**/generation_statistics.json
+*.bak
+*.backup

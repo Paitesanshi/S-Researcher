@@ -1,0 +1,65 @@
+{
+    "variables": [
+        {
+            "name": "contact_rate",
+            "type": "float",
+            "value": 0.75
+        },
+        {
+            "name": "recovery_rate",
+            "type": "float",
+            "value": 0.15
+        },
+        {
+            "name": "policy_compliance",
+            "type": "int",
+            "value": 78
+        },
+        {
+            "name": "healthcare_capacity",
+            "type": "int",
+            "value": 5000
+        },
+        {
+            "name": "social_group_types",
+            "type": "list",
+            "value": [
+                "family",
+                "community",
+                "workplace",
+                "school",
+                "online_social_group"
+            ]
+        },
+        {
+            "name": "government_intervention_active",
+            "type": "bool",
+            "value": true
+        },
+        {
+            "name": "transition_probability_S_to_I",
+            "type": "float",
+            "value": 0.025
+        },
+        {
+            "name": "transition_probability_I_to_R",
+            "type": "float",
+            "value": 0.1
+        },
+        {
+            "name": "public_health_messages",
+            "type": "list",
+            "value": [
+                "Wash your hands frequently",
+                "Stay at least 2 meters apart",
+                "Cover your mouth with a mask in public",
+                "Limit social gatherings to under 10 people"
+            ]
+        },
+        {
+            "name": "recent_vaccination_campaigns",
+            "type": "str",
+            "value": "Campaign focusing on high-risk urban areas with 85% coverage of residents over 65"
+        }
+    ]
+}

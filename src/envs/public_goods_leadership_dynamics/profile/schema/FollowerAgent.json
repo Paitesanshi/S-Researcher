@@ -1,0 +1,26 @@
+{
+  "name": {
+    "type": "str",
+    "default": "FollowerAgent",
+    "private": false,
+    "sampling": "preset",
+    "description": "The name of the agent in the simulation"
+  },
+  "id": {
+    "type": "str",
+    "default": "0",
+    "private": true,
+    "sampling": "default",
+    "description": "Unique id of agent"
+  },
+  "trait": {
+    "type": "str",
+    "default": "",
+    "private": false,
+    "sampling": "random",
+    "choices": [
+      "Proself",
+      "Prosocial"
+    ]
+  }
+}

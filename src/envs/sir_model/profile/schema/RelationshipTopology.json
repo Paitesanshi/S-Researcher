@@ -1,0 +1,11 @@
+{
+    "topology": "grid",
+    "params": {
+        "grid_dimensions": [
+            5,
+            4
+        ],
+        "connection_probability": 0.4,
+        "boundary_type": "wrap_around"
+    }
+}

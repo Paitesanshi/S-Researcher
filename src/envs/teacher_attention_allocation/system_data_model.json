@@ -1,0 +1,56 @@
+{
+    "environment": {
+        "variables": [
+            {
+                "name": "question_content",
+                "type": "str",
+                "default_value": null
+            },
+            {
+                "name": "allocated_attention",
+                "type": "float",
+                "default_value": null
+            }
+        ]
+    },
+    "agents": {
+        "TeacherAgent": {
+            "variables": [
+                {
+                    "name": "question_log",
+                    "type": "list",
+                    "default_value": null
+                },
+                {
+                    "name": "teacher_criteria",
+                    "type": "str",
+                    "default_value": null
+                },
+                {
+                    "name": "attention_distribution",
+                    "type": "list",
+                    "default_value": null
+                }
+            ]
+        },
+        "StudentAgent": {
+            "variables": [
+                {
+                    "name": "expressive_skills",
+                    "type": "dict",
+                    "default_value": null
+                },
+                {
+                    "name": "background_data",
+                    "type": "dict",
+                    "default_value": null
+                },
+                {
+                    "name": "response_type",
+                    "type": "str",
+                    "default_value": null
+                }
+            ]
+        }
+    }
+}

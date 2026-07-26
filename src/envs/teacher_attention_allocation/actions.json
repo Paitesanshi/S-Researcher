@@ -1,0 +1,146 @@
+{
+    "TeacherAgent": [
+        {
+            "id": 1,
+            "name": "pose_question",
+            "condition": null,
+            "description": "The Teacher Agent generates a question with difficulty level and broadcasts it to ALL Student Agents.",
+            "type": "OR",
+            "required_variables": [],
+            "output_updates": [
+                {
+                    "name": "question_log",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "Log of all posed questions with content and difficulty"
+                },
+                {
+                    "name": "current_question",
+                    "type": "dict",
+                    "context": "agent",
+                    "description": "Current question being asked (for tracking)"
+                },
+                {
+                    "name": "responses_buffer",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "Buffer to collect all student responses"
+                },
+                {
+                    "name": "expected_responses",
+                    "type": "int",
+                    "context": "agent",
+                    "description": "Number of expected responses from students"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "evaluate_responses",
+            "condition": "All StudentAgent responses received",
+            "description": "The Teacher Agent collects ALL student responses (raised and not raised), then selects ONE student based on teacher_criteria.",
+            "type": "AND",
+            "required_variables": [
+                {
+                    "name": "will_raise_hand",
+                    "type": "bool",
+                    "context": "event",
+                    "description": "Whether the student raised their hand"
+                },
+                {
+                    "name": "gesture_description",
+                    "type": "str",
+                    "context": "event",
+                    "description": "Description of student's gesture or non-verbal state"
+                },
+                {
+                    "name": "response_content",
+                    "type": "str",
+                    "context": "event",
+                    "description": "The content of the response given by the Student Agent"
+                },
+                {
+                    "name": "response_type",
+                    "type": "str",
+                    "context": "event",
+                    "description": "Type of response provided (verbal or non-verbal)"
+                },
+                {
+                    "name": "student_id",
+                    "type": "str",
+                    "context": "event",
+                    "description": "The identifier of the Student Agent providing the response"
+                },
+                {
+                    "name": "responses_buffer",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "Buffer to collect all student responses before making selection"
+                },
+                {
+                    "name": "expected_responses",
+                    "type": "int",
+                    "context": "agent",
+                    "description": "Number of expected responses to wait for"
+                },
+                {
+                    "name": "teacher_criteria",
+                    "type": "str",
+                    "context": "agent",
+                    "description": "Criteria for selection (will be modified by external intervention)"
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "attention_distribution",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "Record of which student received attention in each round"
+                },
+                {
+                    "name": "responses_buffer",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "Clear buffer after selection"
+                }
+            ]
+        }
+    ],
+    "StudentAgent": [
+        {
+            "id": 3,
+            "name": "respond_to_question",
+            "condition": "QuestionPosedEvent received",
+            "description": "The Student Agent decides whether to raise hand based on ability and willingness, then generates gesture description or non-verbal state.",
+            "type": "OR",
+            "required_variables": [
+                {
+                    "name": "question_content",
+                    "type": "str",
+                    "context": "event",
+                    "description": "Content of the question from QuestionPosedEvent"
+                },
+                {
+                    "name": "difficulty",
+                    "type": "float",
+                    "context": "event",
+                    "description": "Difficulty of the question from QuestionPosedEvent"
+                },
+                {
+                    "name": "prompt_summary",
+                    "type": "str",
+                    "context": "agent",
+                    "description": "Student's background summary including academic level and communication skills"
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "raise_hand_history",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "History of raise-hand decisions"
+                }
+            ]
+        }
+    ]
+}

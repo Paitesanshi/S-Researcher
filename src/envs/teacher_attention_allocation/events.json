@@ -1,0 +1,113 @@
+{
+    "-1": {
+        "id": -1,
+        "from_agent_type": "EnvAgent",
+        "from_action_name": "start",
+        "to_agent_type": "TeacherAgent",
+        "to_action_name": "pose_question",
+        "from_action_id": 0,
+        "to_action_id": 1,
+        "event_name": "StartEvent",
+        "event_info": "Initial trigger for teacher-agent to pose questions in the classroom simulation",
+        "fields": []
+    },
+    "1": {
+        "id": 1,
+        "from_agent_type": "TeacherAgent",
+        "from_action_name": "pose_question",
+        "to_agent_type": "StudentAgent",
+        "to_action_name": "respond_to_question",
+        "from_action_id": 1,
+        "to_action_id": 3,
+        "event_name": "QuestionPosedEvent",
+        "event_info": "Teacher agent poses a question to all student agents",
+        "fields": [
+            {
+                "name": "question_content",
+                "type": "str",
+                "default_value": "",
+                "description": "The content of the question posed by the teacher"
+            },
+            {
+                "name": "difficulty",
+                "type": "float",
+                "default_value": "0.5",
+                "description": "Difficulty level of the question (0-1 scale, where 0.5 is medium)"
+            }
+        ]
+    },
+    "2": {
+        "id": 2,
+        "from_agent_type": "TeacherAgent",
+        "from_action_name": "evaluate_responses",
+        "to_agent_type": "EnvAgent",
+        "to_action_name": "terminate",
+        "from_action_id": 2,
+        "to_action_id": -1,
+        "event_name": "AttentionAllocatedEvent",
+        "event_info": "Teacher agent evaluates responses and allocates attention based on predefined criteria",
+        "fields": [
+            {
+                "name": "allocated_attention",
+                "type": "float",
+                "default_value": "0.0",
+                "description": "The amount of attention allocated to each student agent based on evaluation criteria."
+            },
+            {
+                "name": "evaluation_criteria",
+                "type": "str",
+                "default_value": "",
+                "description": "Criteria used by the Teacher Agent while evaluating student responses, such as communicative expression and socio-academic background."
+            },
+            {
+                "name": "student_ids",
+                "type": "list",
+                "default_value": "[]",
+                "description": "The list of student agent IDs that received attention."
+            }
+        ]
+    },
+    "3": {
+        "id": 3,
+        "from_agent_type": "StudentAgent",
+        "from_action_name": "respond_to_question",
+        "to_agent_type": "TeacherAgent",
+        "to_action_name": "evaluate_responses",
+        "from_action_id": 3,
+        "to_action_id": 2,
+        "event_name": "ResponseProvidedEvent",
+        "event_info": "Student agent provides a response to the teacher's question",
+        "fields": [
+            {
+                "name": "will_raise_hand",
+                "type": "bool",
+                "default_value": "false",
+                "description": "Whether the student decided to raise their hand"
+            },
+            {
+                "name": "gesture_description",
+                "type": "str",
+                "default_value": "",
+                "description": "Description of hand-raising gesture (if raised) or non-verbal state (if not raised)"
+            },
+            {
+                "name": "response_content",
+                "type": "str",
+                "default_value": "",
+                "description": "The content of the response (empty if not raised)"
+            },
+            {
+                "name": "response_type",
+                "type": "str",
+                "default_value": "non-verbal",
+                "description": "Type of response (verbal if raised, non-verbal if not)"
+            },
+            {
+                "name": "student_id",
+                "type": "str",
+                "default_value": "",
+                "description": "The identifier of the student agent"
+            }
+        ]
+    }
+}

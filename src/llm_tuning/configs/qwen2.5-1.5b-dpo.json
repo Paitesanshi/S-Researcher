@@ -1,0 +1,24 @@
+{
+  "model_name_or_path": "Qwen/Qwen2.5-1.5B-Instruct",
+  "method": "dpo",
+  "dataset_path": "artifacts/vr2t/round_1/dpo.jsonl",
+  "output_dir": "artifacts/vr2t/round_1/qwen2.5-1.5b-dpo",
+  "seed": 42,
+  "precision": "bf16",
+  "epochs": 3,
+  "batch_size": 1,
+  "gradient_accumulation_steps": 8,
+  "learning_rate": 1e-5,
+  "warmup_ratio": 0.1,
+  "weight_decay": 0.01,
+  "max_length": 4096,
+  "max_prompt_length": 3072,
+  "beta": 0.1,
+  "gradient_checkpointing": true,
+  "report_to": "none",
+  "lora": {
+    "r": 8,
+    "alpha": 16,
+    "dropout": 0.05
+  }
+}

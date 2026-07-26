@@ -1,0 +1,205 @@
+{
+    "-1": {
+        "id": -1,
+        "from_agent_type": "EnvAgent",
+        "from_action_name": "start",
+        "to_agent_type": "WorkerAgent",
+        "to_action_name": "receive_leadership_attention",
+        "from_action_id": 0,
+        "to_action_id": 1,
+        "event_name": "StartEvent",
+        "event_info": "Initial trigger for WorkerAgent to start receiving leadership attention",
+        "fields": []
+    },
+    "-2": {
+        "id": -2,
+        "from_agent_type": "EnvAgent",
+        "from_action_name": "start",
+        "to_agent_type": "LeaderAgent",
+        "to_action_name": "provide_feedback_and_tasks",
+        "from_action_id": 0,
+        "to_action_id": 3,
+        "event_name": "StartEvent",
+        "event_info": "Initial trigger for LeaderAgent to start providing feedback and tasks",
+        "fields": []
+    },
+    "-3": {
+        "id": -3,
+        "from_agent_type": "EnvAgent",
+        "from_action_name": "start",
+        "to_agent_type": "TeamAgent",
+        "to_action_name": "initiate_team_interaction",
+        "from_action_id": 0,
+        "to_action_id": 5,
+        "event_name": "StartEvent",
+        "event_info": "Initial trigger for TeamAgent to start team interactions",
+        "fields": []
+    },
+    "1": {
+        "id": 1,
+        "from_agent_type": "WorkerAgent",
+        "from_action_name": "receive_leadership_attention",
+        "to_agent_type": "LeaderAgent",
+        "to_action_name": "evaluate_employee_response",
+        "from_action_id": 1,
+        "to_action_id": 4,
+        "event_name": "AttentionReceivedEvent",
+        "event_info": "WorkerAgent acknowledges leadership attention and sends response",
+        "fields": [
+            {
+                "name": "worker_id",
+                "type": "string",
+                "default_value": "",
+                "description": "Unique identifier for the WorkerAgent acknowledging leadership attention."
+            },
+            {
+                "name": "leadership_attention_level",
+                "type": "integer",
+                "default_value": 0,
+                "description": "Level of leadership attention received by WorkerAgent."
+            },
+            {
+                "name": "response_message",
+                "type": "string",
+                "default_value": "Acknowledged",
+                "description": "Message sent by WorkerAgent in response to leadership attention."
+            }
+        ]
+    },
+    "2": {
+        "id": 2,
+        "from_agent_type": "WorkerAgent",
+        "from_action_name": "adjust_productivity",
+        "to_agent_type": "EnvAgent",
+        "to_action_name": "terminate",
+        "from_action_id": 2,
+        "to_action_id": -1,
+        "event_name": "ProductivityAdjustedEvent",
+        "event_info": "WorkerAgent adjusts productivity based on leadership attention and team support",
+        "fields": [
+            {
+                "name": "worker_id",
+                "type": "string",
+                "default_value": "",
+                "description": "Unique identifier for the WorkerAgent adjusting productivity."
+            },
+            {
+                "name": "new_productivity_level",
+                "type": "integer",
+                "default_value": 0,
+                "description": "The adjusted level of productivity of the WorkerAgent."
+            },
+            {
+                "name": "adjustment_reason",
+                "type": "string",
+                "default_value": "Leadership Attention",
+                "description": "Reason for productivity adjustment, influenced by leadership attention or team support."
+            }
+        ]
+    },
+    "3": {
+        "id": 3,
+        "from_agent_type": "LeaderAgent",
+        "from_action_name": "provide_feedback_and_tasks",
+        "to_agent_type": "WorkerAgent",
+        "to_action_name": "receive_leadership_attention",
+        "from_action_id": 3,
+        "to_action_id": 1,
+        "event_name": "FeedbackProvidedEvent",
+        "event_info": "LeaderAgent provides feedback and tasks to WorkerAgent",
+        "fields": [
+            {
+                "name": "leader_id",
+                "type": "string",
+                "default_value": "",
+                "description": "Unique identifier for the LeaderAgent providing feedback."
+            },
+            {
+                "name": "worker_id",
+                "type": "string",
+                "default_value": "",
+                "description": "Unique identifier for the WorkerAgent receiving feedback."
+            },
+            {
+                "name": "feedback_content",
+                "type": "string",
+                "default_value": "Keep up the good work!",
+                "description": "Content of the feedback provided by LeaderAgent."
+            },
+            {
+                "name": "task_assigned",
+                "type": "string",
+                "default_value": "None",
+                "description": "Task assigned to WorkerAgent along with feedback."
+            }
+        ]
+    },
+    "4": {
+        "id": 4,
+        "from_agent_type": "LeaderAgent",
+        "from_action_name": "evaluate_employee_response",
+        "to_agent_type": "EnvAgent",
+        "to_action_name": "terminate",
+        "from_action_id": 4,
+        "to_action_id": -1,
+        "event_name": "ResponseEvaluatedEvent",
+        "event_info": "LeaderAgent evaluates the response of WorkerAgent to provided feedback",
+        "fields": [
+            {
+                "name": "leader_id",
+                "type": "string",
+                "default_value": "",
+                "description": "Unique identifier for the LeaderAgent evaluating the response."
+            },
+            {
+                "name": "worker_id",
+                "type": "string",
+                "default_value": "",
+                "description": "Unique identifier for the WorkerAgent whose response is being evaluated."
+            },
+            {
+                "name": "evaluation_outcome",
+                "type": "string",
+                "default_value": "Satisfactory",
+                "description": "Outcome of the evaluation performed by LeaderAgent."
+            }
+        ]
+    },
+    "5": {
+        "id": 5,
+        "from_agent_type": "TeamAgent",
+        "from_action_name": "initiate_team_interaction",
+        "to_agent_type": "WorkerAgent",
+        "to_action_name": "adjust_productivity",
+        "from_action_id": 5,
+        "to_action_id": 2,
+        "event_name": "TeamSupportEvent",
+        "event_info": "TeamAgent initiates interaction and provides support to WorkerAgent",
+        "fields": [
+            {
+                "name": "team_id",
+                "type": "string",
+                "default_value": "",
+                "description": "Unique identifier for the TeamAgent providing support."
+            },
+            {
+                "name": "worker_id",
+                "type": "string",
+                "default_value": "",
+                "description": "Unique identifier for the WorkerAgent receiving team support."
+            },
+            {
+                "name": "support_type",
+                "type": "string",
+                "default_value": "Emotional",
+                "description": "Type of support provided by TeamAgent to WorkerAgent."
+            },
+            {
+                "name": "interaction_details",
+                "type": "string",
+                "default_value": "Group discussion",
+                "description": "Details of interaction initiated by TeamAgent."
+            }
+        ]
+    }
+}

@@ -1,0 +1,40 @@
+{
+  "name": {
+    "type": "str",
+    "default": "LeaderAgent001",
+    "private": false,
+    "sampling": "llm",
+    "description": "The unique name of the Leader agent in the simulation"
+  },
+  "decision_mechanism": {
+    "type": "str",
+    "default": "voluntary",
+    "private": false,
+    "sampling": "default"
+  },
+  "contribution_level": {
+    "type": "float",
+    "default": 2,
+    "private": false,
+    "sampling": "default"
+  },
+  "interaction_history": {
+    "type": "list",
+    "default": [
+      {
+        "event": "initial_setup",
+        "timestamp": "2023-10-01T10:00:00",
+        "result": "success"
+      }
+    ],
+    "private": true,
+    "sampling": "default"
+  },
+  "id": {
+    "type": "str",
+    "default": "0",
+    "private": true,
+    "sampling": "default",
+    "description": "Unique id of agent"
+  }
+}

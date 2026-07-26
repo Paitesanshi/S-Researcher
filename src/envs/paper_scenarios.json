@@ -1,0 +1,77 @@
+{
+  "description": "Code-only scenario set evaluated in the paper.",
+  "scenario_count": 50,
+  "domains": {
+    "Economics": [
+      "auction_market_dynamics",
+      "bank_reserves",
+      "cash_flow",
+      "collective_action_problem",
+      "customer_satisfaction_and_loyalty_model",
+      "rational_choice_theory"
+    ],
+    "Sociology": [
+      "cultural_capital_theory",
+      "norm_formation_theory",
+      "social_capital_theory",
+      "social_relations_theory",
+      "social_stratification_network",
+      "theory_of_planned_behavior"
+    ],
+    "Political Science": [
+      "electoral_polarization_system",
+      "public_opinion_polling",
+      "rebellion",
+      "selective_exposure_theory",
+      "simple_policy_implementation_model",
+      "voting"
+    ],
+    "Psychology": [
+      "antisocial_personality_theory",
+      "attribution_theory",
+      "cognitive_dissonance_theory",
+      "conformity_behavior_model",
+      "emotional_contagion_model",
+      "metacognition_theory"
+    ],
+    "Organization": [
+      "decision_theory",
+      "hawthorne_studies",
+      "hierarchy_of_needs",
+      "labor_market_matching_process",
+      "organizational_change_and_adaptation_theory",
+      "scientific_management_theory"
+    ],
+    "Demographics": [
+      "community_health_mobilization_theory",
+      "epidemic_transmission_network",
+      "health_belief_model",
+      "health_inequality",
+      "life_course_theory",
+      "reciprocal_altruism_theory",
+      "sir_model"
+    ],
+    "Law": [
+      "case_law_model",
+      "court_trial_simulation",
+      "self_defense_and_excessive_defense",
+      "social_contract_theory",
+      "tort_law_and_compensation",
+      "unjust_enrichment",
+      "work_hours_and_overtime_in_labor_law"
+    ],
+    "Communication": [
+      "agenda_setting_theory",
+      "cultural_globalization",
+      "diffusion_of_innovations",
+      "information_cascade_and_silence",
+      "two_step_flow_model",
+      "uses_and_gratifications_theory"
+    ]
+  },
+  "complete_source_count": 49,
+  "incomplete_source_count": 1,
+  "source_notes": {
+    "cultural_globalization": "The source directory is absent from both available repository snapshots and the archive."
+  }
+}

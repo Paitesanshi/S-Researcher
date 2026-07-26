@@ -1,0 +1,46 @@
+[
+    {
+        "source_agent": "IndividualAgent",
+        "target_agent": "GroupAgent",
+        "relationship_type": "workflow_interaction",
+        "direction": "bidirectional",
+        "required": true,
+        "constraints": {
+            "min_connections": 1,
+            "max_connections": null
+        }
+    },
+    {
+        "source_agent": "IndividualAgent",
+        "target_agent": "HealthcareSystemAgent",
+        "relationship_type": "workflow_interaction",
+        "direction": "unidirectional",
+        "required": true,
+        "constraints": {
+            "min_connections": 1,
+            "max_connections": null
+        }
+    },
+    {
+        "source_agent": "GovernmentAgent",
+        "target_agent": "IndividualAgent",
+        "relationship_type": "workflow_interaction",
+        "direction": "unidirectional",
+        "required": true,
+        "constraints": {
+            "min_connections": 1,
+            "max_connections": null
+        }
+    },
+    {
+        "source_agent": "GovernmentAgent",
+        "target_agent": "GroupAgent",
+        "relationship_type": "workflow_interaction",
+        "direction": "unidirectional",
+        "required": true,
+        "constraints": {
+            "min_connections": 1,
+            "max_connections": null
+        }
+    }
+]

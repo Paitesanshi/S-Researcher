@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VR2T rated decision",
+  "type": "object",
+  "required": ["prompt", "output", "rating"],
+  "properties": {
+    "prompt": {"type": "string", "minLength": 1},
+    "output": {"type": "string", "minLength": 1},
+    "rating": {"type": "number"},
+    "reason": {"type": "string"},
+    "feedback": {"type": ["string", "null"]},
+    "chosen": {"type": "string"},
+    "rejected": {"type": "string"}
+  },
+  "additionalProperties": true
+}

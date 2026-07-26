@@ -1,0 +1,23 @@
+{
+    "domain": "",
+    "scene_name": "rational_choice_theory",
+    "odd_protocol": {
+        "overview": {},
+        "design_concepts": {},
+        "details": {}
+    },
+    "agent_types": {
+        "DecisionAgent": "Responsible for making strategic decisions based on the information gathered from the environment and other agents.",
+        "CommunicationAgent": "Facilitates communication and information exchange between agents to ensure coordinated actions.",
+        "EnvironmentAgent": "Monitors and reports changes in the environment, providing necessary data to other agents for decision-making.",
+        "TaskAgent": "Executes specific tasks or actions as directed by the DecisionAgent, ensuring objectives are met efficiently.",
+        "LearningAgent": "Adapts and improves its strategies over time by learning from past experiences and outcomes."
+    },
+    "portrait": {
+        "DecisionAgent": 1,
+        "CommunicationAgent": 3,
+        "EnvironmentAgent": 5,
+        "TaskAgent": 3,
+        "LearningAgent": 4
+    }
+}
