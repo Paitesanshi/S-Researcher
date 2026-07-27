@@ -8,6 +8,8 @@ INVOCATION_DIR="$(pwd)"
 
 if [[ -n "${PYTHON_BIN:-}" ]]; then
     PYTHON_CMD="${PYTHON_BIN}"
+elif [[ -x "${PROJECT_ROOT}/.venv/bin/python" ]]; then
+    PYTHON_CMD="${PROJECT_ROOT}/.venv/bin/python"
 elif command -v python3.10 >/dev/null 2>&1; then
     PYTHON_CMD="python3.10"
 else
@@ -20,8 +22,6 @@ OneSim Researcher command-line workflow
 
 Usage:
   ./researcher.sh --project-name NAME [OPTIONS]
-  ./researcher.sh --check
-  ./researcher.sh --check-api
 
 Required for a new full workflow:
   -p, --project-name NAME      Output project name
@@ -42,8 +42,6 @@ Options:
       --skip-design            Skip design in supported modes
       --skip-execution         Skip execution in supported modes
       --skip-report            Skip report generation in supported modes
-      --check                  Validate Python, dependencies and CLI imports
-      --check-api              Also make one minimal call to the configured model
   -h, --help                   Show this help
 
 Environment:
@@ -61,8 +59,6 @@ if [[ ! -f "${RESEARCHER_PY}" ]]; then
     exit 1
 fi
 
-CHECK_ONLY=0
-CHECK_API=0
 PROJECT_NAME=""
 MODEL_NAME=""
 MODEL_CONFIG=""
@@ -130,15 +126,6 @@ while [[ $# -gt 0 ]]; do
             ARGS+=("--skip_report")
             shift
             ;;
-        --check)
-            CHECK_ONLY=1
-            shift
-            ;;
-        --check-api)
-            CHECK_ONLY=1
-            CHECK_API=1
-            shift
-            ;;
         -h|--help)
             usage
             exit 0
@@ -201,34 +188,6 @@ mkdir -p "${XDG_CACHE_DIR}"
 export XDG_CACHE_HOME="${XDG_CACHE_DIR}"
 
 "${PYTHON_CMD}" -c 'import sys; assert sys.version_info >= (3, 10), f"Python 3.10+ required, found {sys.version.split()[0]}"'
-
-if [[ "${CHECK_ONLY}" -eq 1 ]]; then
-    "${PYTHON_CMD}" "${RESEARCHER_PY}" --help >/dev/null
-    LLM_API_KEY="${LLM_API_KEY:-preflight-placeholder}" \
-        LLM_MODEL="${LLM_MODEL:-preflight-model}" \
-        ONESIM_PREFLIGHT_MODEL_CONFIG="${MODEL_CONFIG}" \
-        ONESIM_PREFLIGHT_MODEL_NAME="${MODEL_NAME}" \
-        PYTHONPATH="${PROJECT_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}" \
-        "${PYTHON_CMD}" -c \
-        'import json, os; from pathlib import Path; from onesim.models import get_model_manager; from researcher.analysis import AnalysisCoordinator; from researcher.report_generation import ReportGenerator, ReportConfig, ReportContext; root = Path.cwd(); json.loads((root / "config/config.json").read_text()); manager = get_model_manager(); manager.load_model_configs(os.environ["ONESIM_PREFLIGHT_MODEL_CONFIG"], clear_existing=True); manager.get_model(config_name=os.environ["ONESIM_PREFLIGHT_MODEL_NAME"])'
-    echo "Preflight OK: Python version, dependencies, and researcher imports are available."
-    if [[ "${CHECK_API}" -eq 1 ]]; then
-        if [[ "${BUNDLED_MODEL_CONFIG}" -eq 1 && -z "${LLM_API_KEY:-}" ]]; then
-            echo "Error: LLM_API_KEY is required for --check-api with the bundled configuration." >&2
-            exit 2
-        fi
-        if [[ "${BUNDLED_MODEL_CONFIG}" -eq 1 && -z "${LLM_MODEL:-}" ]]; then
-            echo "Error: LLM_MODEL is required for --check-api with the bundled configuration." >&2
-            exit 2
-        fi
-        ONESIM_PREFLIGHT_MODEL_CONFIG="${MODEL_CONFIG}" \
-            ONESIM_PREFLIGHT_MODEL_NAME="${MODEL_NAME}" \
-        PYTHONPATH="${PROJECT_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}" \
-            "${PYTHON_CMD}" -c \
-            'import os; from onesim.models import UserMessage, get_model_manager; manager = get_model_manager(); manager.load_model_configs(os.environ["ONESIM_PREFLIGHT_MODEL_CONFIG"], clear_existing=True); model = manager.get_model(config_name=os.environ["ONESIM_PREFLIGHT_MODEL_NAME"]); response = model(model.format(UserMessage("Reply with exactly: OK")), max_tokens=8, temperature=0); assert response.text and response.text.strip(), "empty model response"; print("API OK: configured model returned a non-empty response.")'
-    fi
-    exit 0
-fi
 
 if [[ -z "${PROJECT_NAME}" ]]; then
     echo "Error: --project-name is required" >&2

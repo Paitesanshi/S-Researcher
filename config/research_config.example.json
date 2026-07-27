@@ -1,5 +1,5 @@
 {
-    "project_name": "reviewer_demo",
+    "project_name": "demo",
     "scenario_description": "A small community public-goods game in which agents decide whether to contribute under different visibility conditions.",
     "research_question": "How does contribution visibility affect cooperation?",
     "research_paradigm": "inductive",

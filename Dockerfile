@@ -17,9 +17,8 @@ RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir --no-deps -e .
 
 COPY config/ ./config/
-COPY examples/ ./examples/
 COPY scripts/ ./scripts/
-COPY researcher.sh LICENSE CITATION.cff REPRODUCIBILITY.md ./
+COPY researcher.sh LICENSE REPRODUCIBILITY.md ./
 RUN chmod +x researcher.sh scripts/*.sh
 
 ENTRYPOINT ["./researcher.sh"]
