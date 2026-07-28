@@ -66,7 +66,7 @@ class FeedbackAgent(GeneralAgent):
             "satisfaction_level": satisfaction_level,
             "event_type": event_type
         })
-        self.env.update_data("feedback_data", feedback_data)
+        await self.env.update_data("feedback_data", feedback_data)
 
         # Prepare and send the FeedbackProcessedEvent to EnvAgent
         events = []

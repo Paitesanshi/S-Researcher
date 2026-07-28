@@ -57,6 +57,11 @@ class Individual(GeneralAgent):
         # Ensure target_ids is a list
         if not isinstance(target_ids, list):
             target_ids = [target_ids]
+        if not target_ids:
+            if isinstance(group_agent_ids, dict):
+                target_ids = list(group_agent_ids.keys())
+            elif isinstance(group_agent_ids, list):
+                target_ids = group_agent_ids
 
         # Update agent's state with the calculated cooperation_willingness
         self.profile.update_data("cooperation_willingness", cooperation_willingness)

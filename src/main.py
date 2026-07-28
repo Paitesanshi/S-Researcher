@@ -9,6 +9,9 @@ from typing import List, Dict, Type, Optional
 import json
 from datetime import datetime
 
+# The simulator is a command-line application and may run on headless servers.
+os.environ.setdefault("MPLBACKEND", "Agg")
+
 from loguru import logger
 import onesim
 from onesim.config import (
@@ -97,7 +100,7 @@ async def run_agents(agents_dict: Dict[str, List[GeneralAgent]]) -> List[asyncio
     tasks = []
     for agent_type in agents_dict:
         for agent in agents_dict[agent_type]:
-            tasks.append(agent.run())
+            tasks.append(asyncio.create_task(agent.run()))
     return tasks
 
 def build_graph(conf: OneSimConfig, agent_factory):
@@ -378,7 +381,7 @@ async def run_simulation(
                 # Create agent tasks
                 for agent_type in agents:
                     for agent_id, agent in agents[agent_type].items():
-                        agent_tasks.append(agent.run())
+                        agent_tasks.append(asyncio.create_task(agent.run()))
 
                 # Run all tasks with termination handling
                 event_bus_task = asyncio.create_task(event_bus.run())
@@ -445,7 +448,7 @@ async def run_simulation(
             # Create agent tasks
             for agent_type in agents:
                 for agent_id, agent in agents[agent_type].items():
-                    agent_tasks.append(agent.run())
+                    agent_tasks.append(asyncio.create_task(agent.run()))
 
             # Get proxy environment tasks
             env_tasks = []

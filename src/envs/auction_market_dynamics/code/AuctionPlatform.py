@@ -197,8 +197,8 @@ class AuctionPlatform(GeneralAgent):
     #     if not isinstance(target_ids, list):
     #         target_ids = [target_ids]
 
-    #     self.env.update_data("market_volatility", market_volatility)
-    #     self.env.update_data("information_asymmetry", information_asymmetry)
+    #     await self.env.update_data("market_volatility", market_volatility)
+    #     await self.env.update_data("information_asymmetry", information_asymmetry)
 
     #     events = []
     #     for target_id in target_ids:

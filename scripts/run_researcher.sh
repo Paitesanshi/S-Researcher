@@ -141,6 +141,7 @@ done
 cd "${PROJECT_ROOT}"
 
 export PYTHONDONTWRITEBYTECODE="${PYTHONDONTWRITEBYTECODE:-1}"
+export MPLBACKEND="${MPLBACKEND:-Agg}"
 
 normalize_model_environment() {
     # Generic variables take precedence. Standard OpenAI and the previously

@@ -65,6 +65,6 @@ class TeamAgent(GeneralAgent):
 
         # Update the team atmosphere in the environment
         new_team_atmosphere = "Improved through interaction"
-        self.env.update_data("team_atmosphere", new_team_atmosphere)
+        await self.env.update_data("team_atmosphere", new_team_atmosphere)
 
         return events

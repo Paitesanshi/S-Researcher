@@ -7,9 +7,10 @@ It uses YuLan-OneSim to turn a social-science question into an experimental
 design, executable agent simulation, quantitative analysis, and English
 research report.
 
-This repository is a code-only supplement. It includes the Researcher
-workflow, simulation runtime, paper scenario source, and VR2T tuning
-utilities. It excludes datasets, generated agent profiles, human-participant
+This repository is a code-focused supplement. It includes the Researcher
+workflow, simulation runtime, paper scenario source, VR2T tuning utilities,
+and small synthetic initialization files used by the bundled environments.
+It excludes empirical datasets, generated agent profiles, human-participant
 records, run outputs, model weights, and API credentials.
 
 ## What is included
@@ -27,6 +28,13 @@ records, run outputs, model weights, and API credentials.
 - An OpenAI-compatible chat API for model-backed workflow phases
 - Optional: XeLaTeX and BibTeX for compiling the final PDF report
 - Optional: CUDA-capable hardware for VR2T fine-tuning
+
+The research code was tested on an Ubuntu Linux server with Python 3.10 and
+eight NVIDIA A100 GPUs. The API-backed Researcher workflow and reviewer demo
+do not require local GPU hardware; the A100 GPUs are relevant only to local
+VR2T training. All Python dependency constraints and minimum versions are
+listed in `requirements.txt`, while the separate tuning dependencies are in
+`requirements-tuning.txt`.
 
 ## Installation
 
@@ -48,6 +56,10 @@ python -m pip install -r requirements.txt
 python -m pip install --no-deps -e .
 ```
 
+Typical installation takes approximately 5–10 minutes on a broadband-connected
+desktop computer. Download time for the scientific Python dependencies is the
+main source of variation.
+
 ## Model configuration
 
 The bundled model configuration contains environment-variable placeholders,
@@ -65,6 +77,60 @@ export LLM_PROVIDER="openai"
 `DEEPSEEK_*` variables are accepted as compatibility aliases.
 
 Never commit a populated model configuration or an API key.
+
+## Reviewer demo on synthetic data
+
+The bundled `collective_action_problem` environment is the small simulated
+dataset used for the reviewer demo. Its initial state is stored in
+`src/envs/collective_action_problem/env_data.json`; its agent schemas, actions,
+and events are stored in the same environment directory. The bounded
+`config/demo_config.json` configuration runs one simulation round with one
+Individual agent and one Group agent.
+
+After configuring an OpenAI-compatible API as described above, run:
+
+```bash
+.venv/bin/python src/main.py \
+  --config config/demo_config.json \
+  --model_config config/model_config.json \
+  --model_config_name default-chat \
+  --env collective_action_problem \
+  --output_dir projects/reviewer_env_demo/output \
+  --log_dir projects/reviewer_env_demo/logs
+```
+
+On the first run, the software generates two synthetic agent profiles through
+the configured API. These generated profiles are written under
+`src/envs/collective_action_problem/profile/data/` and are ignored by Git.
+They are generated inputs, not empirical or human-participant data.
+
+A successful run exits with status 0, logs `All steps (rounds) completed`, and
+creates the following output structure:
+
+```text
+projects/reviewer_env_demo/
+├── logs/
+│   └── collective_action_problem.log
+└── output/
+    └── metrics_plots/
+        └── step_1/
+            ├── general/
+            │   ├── general_metrics.json
+            │   ├── round_duration.png
+            │   └── total_tokens.png
+            └── profiles/
+                └── profiles_<timestamp>.json
+```
+
+A clean real-API run, including first-time profile generation, completed in
+51.6 seconds during the submission test on 28 July 2026. Allow approximately
+1–3 minutes on a normal desktop because runtime depends on the selected API,
+model response speed, network latency, and first-time Matplotlib font-cache
+generation. LLM-generated profile values and numerical outcomes may vary, but
+the output structure and successful termination condition are fixed.
+
+To run a different bundled environment, use `config/config.json` and replace
+the `--env` value with a directory name from `src/envs/`.
 
 ## Run the complete Researcher workflow
 
@@ -97,6 +163,11 @@ An equivalent JSON-driven example is available at
   --config config/research_config.example.json \
   --project-name demo
 ```
+
+For a new research input, copy the example JSON and replace
+`scenario_description`, `research_question`, and `research_paradigm`, or pass
+the corresponding `--scenario`, `--question`, and `--paradigm` options. No
+external empirical dataset is required by the standard Researcher workflow.
 
 Use `./researcher.sh --help` for all options.
 

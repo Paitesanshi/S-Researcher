@@ -60,7 +60,7 @@ class Laggards(GeneralAgent):
             target_ids = [target_ids]
 
         # Update environment data
-        self.env.update_data("completion_status", completion_status)
+        await self.env.update_data("completion_status", completion_status)
 
         # Prepare and send outgoing event
         events = []

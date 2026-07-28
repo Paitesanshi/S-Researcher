@@ -67,8 +67,8 @@ class DecisionContextAgent(GeneralAgent):
             target_ids = [target_ids]
 
         # Update environment with results
-        self.env.update_data("completion_status", completion_status)
-        self.env.update_data("results", results)
+        await self.env.update_data("completion_status", completion_status)
+        await self.env.update_data("results", results)
 
         # Prepare and send DecisionContextHandledEvent to each target
         events = []

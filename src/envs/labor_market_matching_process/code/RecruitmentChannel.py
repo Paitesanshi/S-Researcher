@@ -72,6 +72,6 @@ class RecruitmentChannel(GeneralAgent):
         # Update Environment Data
         if job_id is not None:
             distributed_jobs.append(job_id)
-            self.env.update_data("distributed_jobs", distributed_jobs)
+            await self.env.update_data("distributed_jobs", distributed_jobs)
 
         return events

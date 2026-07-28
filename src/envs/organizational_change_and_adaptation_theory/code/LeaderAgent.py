@@ -28,7 +28,7 @@ class LeaderAgent(GeneralAgent):
         change_goals = self.profile.get_data("change_goals", "")
 
         # Update the environment's change status
-        self.env.update_data("change_status", "Change process initiated")
+        await self.env.update_data("change_status", "Change process initiated")
 
         # Generate LLM reaction to decide on target_ids
         instruction = f"""

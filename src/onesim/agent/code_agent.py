@@ -713,7 +713,7 @@ Generate an asynchronous handler method for the action '{action_info['name']}' w
   * For each relationship, access target variable via: value=await self.get_agent_data(relationship.target_id,"var_name","default")
 
 4. Data Modification:
-- If modifying a variable in 'env', use: self.env.update_data("var_name", new_value)
+- If modifying a variable in 'env', use: await self.env.update_data("var_name", new_value)
 - If modifying a variable in 'agent', use: self.profile.update_data("var_name", new_value)
 
 5. Decision Making

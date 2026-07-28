@@ -29,7 +29,7 @@ class SocialEnvironmentAgent(GeneralAgent):
         if event.__class__.__name__ != "InteractionInitiatedEvent":
             return []
 
-        self.env.update_data("engagement_status", "active")
+        await self.env.update_data("engagement_status", "active")
 
         instruction = """
         The social environment agent needs to respond to an interaction initiated by an antisocial agent. 
@@ -92,8 +92,8 @@ class SocialEnvironmentAgent(GeneralAgent):
         if not isinstance(target_ids, list):
             target_ids = [target_ids]
 
-        self.env.update_data("handling_method", handling_method)
-        self.env.update_data("outcome", outcome)
+        await self.env.update_data("handling_method", handling_method)
+        await self.env.update_data("outcome", outcome)
 
         events = []
         for target_id in target_ids:
@@ -129,8 +129,8 @@ class SocialEnvironmentAgent(GeneralAgent):
         if not isinstance(target_ids, list):
             target_ids = [target_ids]
 
-        self.env.update_data("response_action", response_action)
-        self.env.update_data("resolution_status", resolution_status)
+        await self.env.update_data("response_action", response_action)
+        await self.env.update_data("resolution_status", resolution_status)
 
         events = []
         for target_id in target_ids:

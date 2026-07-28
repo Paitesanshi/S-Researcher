@@ -69,11 +69,13 @@ class Group(GeneralAgent):
         target_ids = result.get('target_ids', [])
         if not isinstance(target_ids, list):
             target_ids = [target_ids]
+        if not target_ids:
+            target_ids = ["ENV"]
 
         # Update environment with the results
-        self.env.update_data("collective_success", collective_success)
-        self.env.update_data("total_cooperation", total_cooperation)
-        self.env.update_data("group_benefit", group_benefit)
+        await self.env.update_data("collective_success", collective_success)
+        await self.env.update_data("total_cooperation", total_cooperation)
+        await self.env.update_data("group_benefit", group_benefit)
 
         # Create and send the CollectiveActionResultEvent to the environment
         events = []

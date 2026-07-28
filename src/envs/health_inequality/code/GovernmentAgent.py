@@ -84,7 +84,7 @@ class GovernmentAgent(GeneralAgent):
             return []
 
         # Update the environment with policy effectiveness
-        self.env.update_data("policy_effectiveness", policy_effectiveness)
+        await self.env.update_data("policy_effectiveness", policy_effectiveness)
 
         # Prepare and send the PolicyImplementationEvent to each target
         events = []
